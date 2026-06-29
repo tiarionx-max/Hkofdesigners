@@ -12,6 +12,8 @@ const LOGO_TEXT_SRC  = "https://www.figma.com/api/mcp/asset/060c1e2c-af40-4002-a
 const ARROW_DOWN_SRC = "https://www.figma.com/api/mcp/asset/46ccab86-d8be-431c-bb48-a1180ad5d814";
 const MOON_ICON_SRC  = "https://www.figma.com/api/mcp/asset/201b97b9-b2c3-4485-b734-9eb7920fb060";
 const SUN_ICON_SRC   = "https://www.figma.com/api/mcp/asset/2e849da4-539a-4e75-a401-bba7ee2012e9";
+const BLOG_ART_SRC    = "https://www.figma.com/api/mcp/asset/1ce9d618-4056-4328-8d27-1bf6afcea9a5";
+const EVENTS_ART_SRC  = "https://www.figma.com/api/mcp/asset/044ce767-3d8e-4329-abc6-d88261d7e671";
 
 // ─── Navigation data ────────────────────────────────────────────
 type NavChild = { label: string; href: string };
@@ -319,7 +321,7 @@ function HamburgerButton({
   );
 }
 
-// ─── Mobile drawer ───────────────────────────────────────────────
+// ─── Mobile drawer (full-screen overlay) ─────────────────────────
 function MobileDrawer({
   open,
   pathname,
@@ -329,7 +331,7 @@ function MobileDrawer({
   pathname: string;
   onClose: () => void;
 }) {
-  const [expandedItem, setExpandedItem] = useState<string | null>(null);
+  const [blogEventsOpen, setBlogEventsOpen] = useState(false);
 
   // Lock body scroll when open
   useEffect(() => {
@@ -337,146 +339,179 @@ function MobileDrawer({
     return () => { document.body.style.overflow = ""; };
   }, [open]);
 
+  // Collapse the Blog/Events accordion whenever the drawer closes
+  useEffect(() => {
+    if (!open) setBlogEventsOpen(false);
+  }, [open]);
+
   return (
     <AnimatePresence>
       {open && (
-        <>
-          {/* Backdrop */}
-          <motion.div
-            key="backdrop"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm"
-            onClick={onClose}
-            aria-hidden="true"
-          />
+        <motion.div
+          key="mobile-menu"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.2 }}
+          className="fixed inset-0 z-[100] bg-[#0f0f0f] overflow-y-auto"
+        >
+          <div className="min-h-full flex flex-col px-6 py-6 max-w-[430px] mx-auto">
+            {/* Header — logo + close */}
+            <div className="flex items-center justify-between shrink-0">
+              <Logo />
+              <button
+                onClick={onClose}
+                aria-label="Close menu"
+                className="flex items-center justify-center w-[34px] h-[34px] rounded-[6px]
+                           text-[#fffbe8] hover:bg-white/[0.06] transition-colors duration-150
+                           outline-none focus-visible:ring-2 focus-visible:ring-[#fffbe8]/40"
+              >
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
+            </div>
 
-          {/* Panel */}
-          <motion.div
-            key="panel"
-            initial={{ opacity: 0, y: -12, scale: 0.98 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -12, scale: 0.98 }}
-            transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-            className="absolute top-[calc(100%+8px)] inset-x-0 z-50
-                       bg-[#181818] border border-[rgba(255,255,255,0.1)]
-                       rounded-[24px] overflow-hidden
-                       shadow-[0_16px_48px_rgba(0,0,0,0.6)]"
-          >
-            <nav aria-label="Mobile navigation">
-              <ul className="py-2">
-                {NAV_LINKS.map((link, i) => {
-                  const isActive = pathname === link.href;
-                  const isExpanded = expandedItem === link.label;
+            {/* Nav links */}
+            <nav aria-label="Mobile navigation" className="flex flex-col gap-5 mt-16">
+              {NAV_LINKS.map((link, i) => {
+                const isActive = pathname === link.href;
+                const isBlogEvents = link.label === "Blog/Events";
 
-                  return (
-                    <li key={link.label}>
-                      <motion.div
-                        initial={{ opacity: 0, x: -8 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: i * 0.04, duration: 0.2 }}
-                      >
-                        {link.children ? (
-                          <>
-                            <button
-                              onClick={() => setExpandedItem(isExpanded ? null : link.label)}
-                              className="w-full flex items-center justify-between
-                                         px-5 py-3.5 text-[15px] font-normal
-                                         text-[rgba(255,251,232,0.75)]
-                                         hover:text-[#fffbe8] hover:bg-white/[0.04]
-                                         transition-colors duration-150 outline-none
-                                         focus-visible:text-[#fffbe8]"
-                            >
-                              <span>{link.label}</span>
-                              <motion.span
-                                animate={{ rotate: isExpanded ? 180 : 0 }}
-                                transition={{ duration: 0.2 }}
-                                className="relative"
-                                style={{ width: 20, height: 20 }}
-                              >
-                                <Image
-                                  src={ARROW_DOWN_SRC}
-                                  alt=""
-                                  fill
-                                  className="object-contain opacity-60"
-                                  unoptimized
-                                />
-                              </motion.span>
-                            </button>
-                            <AnimatePresence>
-                              {isExpanded && (
-                                <motion.ul
-                                  initial={{ height: 0, opacity: 0 }}
-                                  animate={{ height: "auto", opacity: 1 }}
-                                  exit={{ height: 0, opacity: 0 }}
-                                  transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-                                  className="overflow-hidden bg-[rgba(255,255,255,0.03)]
-                                             border-y border-[rgba(255,255,255,0.06)]"
-                                >
-                                  {link.children.map((child) => (
-                                    <li key={child.label}>
-                                      <Link
-                                        href={child.href}
-                                        onClick={onClose}
-                                        className="block px-9 py-3 text-[14px]
-                                                   text-[rgba(255,251,232,0.55)]
-                                                   hover:text-[#fffbe8]
-                                                   transition-colors duration-150"
-                                      >
-                                        {child.label}
-                                      </Link>
-                                    </li>
-                                  ))}
-                                </motion.ul>
-                              )}
-                            </AnimatePresence>
-                          </>
-                        ) : (
-                          <Link
-                            href={link.href}
-                            onClick={onClose}
-                            className={`
-                              flex items-center justify-between px-5 py-3.5
-                              text-[15px] font-normal
-                              hover:bg-white/[0.04] transition-colors duration-150
-                              outline-none focus-visible:bg-white/[0.04]
-                              ${isActive ? "text-[#fffbe8]" : "text-[rgba(255,251,232,0.75)] hover:text-[#fffbe8]"}
-                            `}
+                return (
+                  <motion.div
+                    key={link.label}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: i * 0.05, duration: 0.25 }}
+                  >
+                    {isBlogEvents ? (
+                      <>
+                        <button
+                          onClick={() => setBlogEventsOpen((p) => !p)}
+                          aria-expanded={blogEventsOpen}
+                          className="w-full flex items-center justify-between
+                                     text-[16px] font-normal
+                                     text-[rgba(255,255,255,0.7)] hover:text-[#fffbe8]
+                                     transition-colors duration-150 outline-none"
+                        >
+                          <span>{link.label}</span>
+                          <motion.span
+                            animate={{ rotate: blogEventsOpen ? 180 : 0 }}
+                            transition={{ duration: 0.2 }}
+                            className="relative shrink-0"
+                            style={{ width: 24, height: 24 }}
                           >
-                            <span>{link.label}</span>
-                            {isActive && (
-                              <span className="w-1.5 h-1.5 rounded-full bg-[#FF3D3D]" aria-hidden="true" />
-                            )}
-                          </Link>
-                        )}
-                      </motion.div>
-                    </li>
-                  );
-                })}
-              </ul>
+                            <Image src={ARROW_DOWN_SRC} alt="" fill className="object-contain" unoptimized />
+                          </motion.span>
+                        </button>
+                        <AnimatePresence>
+                          {blogEventsOpen && (
+                            <motion.div
+                              initial={{ height: 0, opacity: 0 }}
+                              animate={{ height: "auto", opacity: 1 }}
+                              exit={{ height: 0, opacity: 0 }}
+                              transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+                              className="overflow-hidden"
+                            >
+                              <div className="flex flex-col gap-6 mt-6 bg-[#181818] border-[0.7px] border-[rgba(255,255,255,0.1)] rounded-[24px] p-6">
+                                {/* Blog (Medium) card */}
+                                <Link
+                                  href="/blog"
+                                  onClick={onClose}
+                                  className="relative bg-[#0f0f0f] border-[0.7px] border-[rgba(255,255,255,0.1)]
+                                             rounded-[16px] overflow-hidden p-[26px] flex flex-col gap-5"
+                                >
+                                  <div className="flex flex-col gap-1.5 relative z-10">
+                                    <span className="text-[12px] text-[#4154f9]">Blog (Medium)</span>
+                                    <span className="text-[20px] font-medium text-[#fffbe8]">Read. Learn. Design.</span>
+                                    <span className="text-[12px] text-[rgba(255,255,255,0.7)] leading-snug">
+                                      Explore design stories and insights from the HK community on Medium.
+                                    </span>
+                                  </div>
+                                  <span className="relative z-10 inline-flex items-center justify-center w-fit px-3 py-2.5 rounded-full bg-[#fffbe8] text-[#0f0f0f] text-[10px] font-medium shadow-[5px_5px_0px_0px_#000]">
+                                    Read on Medium
+                                  </span>
+                                  <div className="absolute -bottom-10 -right-4 w-[170px] h-[112px] opacity-90" aria-hidden="true">
+                                    <Image src={BLOG_ART_SRC} alt="" fill className="object-contain" unoptimized />
+                                  </div>
+                                </Link>
 
-              {/* Mobile CTA */}
-              <div className="px-4 pb-4 pt-2 border-t border-[rgba(255,255,255,0.08)]">
-                <a
-                  href="#"
-                  onClick={onClose}
-                  className="flex items-center justify-center w-full h-[46px]
-                             rounded-full bg-[#fffbe8] text-[#0f0f0f]
-                             text-[14px] font-medium
-                             shadow-[4px_4px_0px_0px_#000]
-                             hover:shadow-[2px_2px_0px_0px_#000]
-                             hover:translate-x-[2px] hover:translate-y-[2px]
-                             transition-all duration-150 outline-none
-                             focus-visible:ring-2 focus-visible:ring-[#0f0f0f]/30"
-                >
-                  Join Community
-                </a>
-              </div>
+                                {/* Events card */}
+                                <Link
+                                  href="/events"
+                                  onClick={onClose}
+                                  className="relative bg-[#0f0f0f] border-[0.7px] border-[rgba(255,255,255,0.1)]
+                                             rounded-[16px] overflow-hidden p-[26px] flex flex-col gap-5"
+                                >
+                                  <div className="flex flex-col gap-1.5 relative z-10">
+                                    <span className="text-[12px] text-[#af52de]">Events</span>
+                                    <span className="text-[20px] font-medium text-[#fffbe8]">Design Happens Here.</span>
+                                    <span className="text-[12px] text-[rgba(255,255,255,0.7)] leading-snug">
+                                      Discover upcoming events, workshops, and meetups curated for every designer.
+                                    </span>
+                                  </div>
+                                  <span className="relative z-10 inline-flex items-center justify-center w-fit px-3 py-2.5 rounded-full bg-[#fffbe8] text-[#0f0f0f] text-[10px] font-medium shadow-[5px_5px_0px_0px_#000]">
+                                    Explore Events
+                                  </span>
+                                  <div className="absolute bottom-0 right-3 w-[104px] h-[136px] opacity-90" aria-hidden="true">
+                                    <Image src={EVENTS_ART_SRC} alt="" fill className="object-contain" unoptimized />
+                                  </div>
+                                </Link>
+                              </div>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </>
+                    ) : (
+                      <Link
+                        href={link.href}
+                        onClick={onClose}
+                        className={`flex flex-col gap-[5px] text-[16px] font-normal transition-colors duration-150 outline-none
+                          ${isActive ? "text-[#fffbe8]" : "text-[rgba(255,255,255,0.7)] hover:text-[#fffbe8]"}`}
+                        aria-current={isActive ? "page" : undefined}
+                      >
+                        <span>{link.label}</span>
+                        {isActive && (
+                          <span
+                            className="h-[3px] w-full rounded-full"
+                            style={{ background: "linear-gradient(90deg,#FF3D3D 0%,#FF6B4A 100%)" }}
+                            aria-hidden="true"
+                          />
+                        )}
+                      </Link>
+                    )}
+                  </motion.div>
+                );
+              })}
             </nav>
-          </motion.div>
-        </>
+
+            {/* Spacer pushes theme + CTA to the bottom */}
+            <div className="flex-1 min-h-10" />
+
+            {/* Theme row */}
+            <div className="flex items-center justify-between mt-6 shrink-0">
+              <span className="text-[16px] text-[rgba(255,255,255,0.7)]">Theme</span>
+              <ThemeToggle />
+            </div>
+
+            {/* Join Community CTA */}
+            <a
+              href="#"
+              onClick={onClose}
+              className="mt-6 mb-2 flex items-center justify-center w-full h-[50px] rounded-full
+                         bg-[#fffbe8] text-[#0f0f0f] text-[16px] font-medium
+                         border border-black/10
+                         shadow-[5px_5px_0px_0px_#000]
+                         hover:shadow-[3px_3px_0px_0px_#000] hover:translate-x-[2px] hover:translate-y-[2px]
+                         transition-all duration-150 outline-none
+                         focus-visible:ring-2 focus-visible:ring-[#0f0f0f]/30 shrink-0"
+            >
+              Join Community
+            </a>
+          </div>
+        </motion.div>
       )}
     </AnimatePresence>
   );
