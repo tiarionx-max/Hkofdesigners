@@ -1,26 +1,103 @@
 @import "tailwindcss";
 
+/* ─── Design Tokens ───────────────────────────────────────────── */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg: #0f0f0f;
+  --bg-secondary: #181818;
+  --cream: #fffbe8;
+  --cream-70: rgba(255, 251, 232, 0.7);
+  --yellow: #ffb522;
+  --stroke: rgba(255, 255, 255, 0.1);
+  --stroke-dark: rgba(0, 0, 0, 0.1);
+  --shadow-hard: black;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* Colors */
+  --color-bg: var(--bg);
+  --color-bg-secondary: var(--bg-secondary);
+  --color-cream: var(--cream);
+  --color-cream-70: var(--cream-70);
+  --color-yellow: var(--yellow);
+  --color-stroke: var(--stroke);
+  --color-stroke-dark: var(--stroke-dark);
+  --color-red-accent: #FF3D3D;
+  --color-blue-accent: #4169FF;
+  --color-green-accent: #00D084;
+  --color-purple-accent: #8B5CF6;
+  --color-orange-accent: #FF6B35;
+
+  /* Typography */
+  --font-sans: var(--font-outfit), system-ui, sans-serif;
+
+  /* Spacing / sizing */
+  --radius-pill: 9999px;
+  --radius-card: 15px;
+
+  /* Shadows */
+  --shadow-button: 4px 4px 0px 0px #000;
+  --shadow-card: 7px 6px 0px 0px var(--cream);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ─── Base ────────────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--bg);
+  color: var(--cream);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ─── Marquee ─────────────────────────────────────────────────── */
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 35s linear infinite;
+}
+
+.animate-marquee-reverse {
+  animation: marquee 35s linear infinite reverse;
+}
+
+/* ─── Utilities ───────────────────────────────────────────────── */
+.container-hk {
+  width: 100%;
+  max-width: 1110px;
+  margin-inline: auto;
+  padding-inline: 1.5rem;
+}
+
+@media (min-width: 1200px) {
+  .container-hk {
+    padding-inline: 0;
+  }
+}
+
+/* scrollbar thin */
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 2px;
 }
