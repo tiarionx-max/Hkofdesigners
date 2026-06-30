@@ -59,17 +59,6 @@ const EVENTS = [
     cta: "RSVP on Luma",
     href: "#",
   },
-  {
-    id: "e5",
-    title: "Year-End Designer Meetup",
-    description: "Celebrate the year with the HK community — reflections, highlights, and what's coming next.",
-    date: "Dec 28, 2025",
-    dayTime: "Sunday · 05:00 PM (WAT)",
-    location: "Google Meet",
-    sublocation: "Remote",
-    cta: "Join the Space",
-    href: "#",
-  },
 ];
 
 const EASE   = [0.22, 1, 0.36, 1] as const;
@@ -239,7 +228,7 @@ export default function Events() {
   // Recalculate on mount + resize
   useEffect(() => {
     const calc = () => {
-      const pv = window.innerWidth >= 1024 ? 3 : window.innerWidth >= 640 ? 2 : 1;
+      const pv = window.innerWidth >= 640 ? 2 : 1;
       setPerView(pv);
       if (containerRef.current) {
         const cw = containerRef.current.offsetWidth;
