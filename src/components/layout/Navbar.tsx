@@ -8,8 +8,6 @@ import { usePathname } from "next/navigation";
 
 // ─── Asset URLs (from Figma node 15:968, valid ~7 days) ──────────
 // Navbar bar
-const LOGO_MARK_SRC  = "https://www.figma.com/api/mcp/asset/0cd081e0-64b3-4bb4-adf7-91ce4a9abd80";
-const LOGO_TEXT_SRC  = "https://www.figma.com/api/mcp/asset/eed8ffff-6ed0-480b-a3ee-985c5ec539a6";
 const ARROW_DOWN_SRC = "https://www.figma.com/api/mcp/asset/e3a7f75a-e6c8-4c34-aefd-db336b4de01e";
 const MOON_ICON_SRC  = "https://www.figma.com/api/mcp/asset/111b858c-971a-4767-8ab1-4e7b469c32fc";
 const SUN_ICON_SRC   = "https://www.figma.com/api/mcp/asset/a0c3dd24-8ce1-4bc3-a6f0-f68fff0a4803";
@@ -97,30 +95,30 @@ const panelVariants = {
 const panelTransition = { duration: 0.2, ease: EASE };
 
 // ─── Logo ─────────────────────────────────────────────────────────
-function Logo({ compact = false }: { compact?: boolean }) {
+function Logo() {
   return (
-    <Link
-      href="/"
-      aria-label="HK of Designers — home"
-      className="flex items-center gap-[6px] shrink-0 outline-none
-                 focus-visible:ring-2 focus-visible:ring-[#fffbe8]/40 rounded-sm"
+    <motion.div
+      whileHover={{ scale: 1.04, filter: "brightness(1.12)" }}
+      whileTap={{ scale: 0.97 }}
+      transition={{ duration: 0.22, ease: EASE }}
+      style={{ transformOrigin: "left center" }}
     >
-      <div className="relative shrink-0" style={{ width: 31, height: 30 }}>
-        <Image src={LOGO_MARK_SRC} alt="" fill className="object-contain" unoptimized priority />
-      </div>
-      {!compact && (
-        <div className="relative shrink-0" style={{ width: 91, height: 34 }}>
-          <Image
-            src={LOGO_TEXT_SRC}
-            alt="HK of Designers"
-            fill
-            className="object-contain object-left"
-            unoptimized
-            priority
-          />
-        </div>
-      )}
-    </Link>
+      <Link
+        href="/"
+        aria-label="HK of Designers — home"
+        className="flex items-center shrink-0 outline-none
+                   focus-visible:ring-2 focus-visible:ring-[#fffbe8]/40 rounded-sm"
+      >
+        <Image
+          src="/hk-mark.png"
+          alt="HK of Designers"
+          width={122}
+          height={46}
+          className="object-contain object-left"
+          priority
+        />
+      </Link>
+    </motion.div>
   );
 }
 
@@ -787,22 +785,17 @@ export default function Navbar() {
                      border-[0.6px] border-[rgba(255,255,255,0.1)]
                      rounded-full"
         >
-          {/* Logo — mark+text on sm, mark-only on xs */}
-          <div className="flex items-center gap-[6px]">
-            <div className="relative shrink-0" style={{ width: 31, height: 30 }}>
-              <Image src={LOGO_MARK_SRC} alt="" fill className="object-contain" unoptimized priority />
-            </div>
-            <div className="relative hidden sm:block shrink-0" style={{ width: 91, height: 34 }}>
-              <Image
-                src={LOGO_TEXT_SRC}
-                alt="HK of Designers"
-                fill
-                className="object-contain object-left"
-                unoptimized
-                priority
-              />
-            </div>
-          </div>
+          {/* Logo — full lockup */}
+          <Link href="/" aria-label="HK of Designers — home" className="shrink-0 outline-none">
+            <Image
+              src="/hk-mark.png"
+              alt="HK of Designers"
+              width={110}
+              height={42}
+              className="object-contain"
+              priority
+            />
+          </Link>
 
           {/* Right — compact CTA (sm+) + hamburger */}
           <div className="flex items-center gap-2.5">
