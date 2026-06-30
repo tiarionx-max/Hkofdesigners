@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
+import { motion, AnimatePresence, useMotionValue, useTransform } from "framer-motion";
 
 // ── Data ──────────────────────────────────────────────────────────────────────
 const NAV_LINKS = [
@@ -106,8 +107,30 @@ function HKMark({ size }: { size: number }) {
   );
 }
 
-// ── Responsive HKMark — uses CSS custom property via container observation ─────
-// Simplest approach: fixed sizes at each breakpoint via inline style + viewport calc.
+// ── Logo mark — image if committed, CSS shapes fallback ───────────────────────
+const LOGO_IMAGE = "/hk-mark.png";
+
+function LogoMark() {
+  const [useImage, setUseImage] = useState(true);
+  if (useImage) {
+    return (
+      <div style={{ width: "100%", aspectRatio: "1 / 1" }}>
+        <Image
+          src={LOGO_IMAGE}
+          alt="HK of Designers mark"
+          width={252}
+          height={252}
+          style={{ width: "100%", height: "auto" }}
+          onError={() => setUseImage(false)}
+          priority={false}
+        />
+      </div>
+    );
+  }
+  return <ResponsiveMark />;
+}
+
+// ── Responsive HKMark — CSS shapes fallback ────────────────────────────────────
 function ResponsiveMark() {
   const [size, setSize] = useState(120);
 
@@ -160,8 +183,35 @@ const SOCIALS = [
 
 // ── Footer ────────────────────────────────────────────────────────────────────
 export default function Footer() {
+  const footerRef = useRef<HTMLElement>(null);
+  const spotX = useMotionValue(50);
+  const spotY = useMotionValue(50);
+
+  const spotBg = useTransform(
+    [spotX, spotY],
+    ([x, y]) =>
+      `radial-gradient(circle 520px at ${x}% ${y}%, rgba(255,251,232,0.045) 0%, transparent 65%)`
+  );
+
+  function handleMouseMove(e: React.MouseEvent<HTMLElement>) {
+    const rect = footerRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    spotX.set(((e.clientX - rect.left) / rect.width) * 100);
+    spotY.set(((e.clientY - rect.top) / rect.height) * 100);
+  }
+
   return (
-    <footer className="bg-[#111] overflow-hidden relative">
+    <footer
+      ref={footerRef}
+      onMouseMove={handleMouseMove}
+      className="bg-[#111] overflow-hidden relative"
+    >
+      {/* cursor spotlight */}
+      <motion.div
+        aria-hidden
+        className="absolute inset-0 pointer-events-none"
+        style={{ background: spotBg, zIndex: 1 }}
+      />
 
       {/* ── Animated atmospheric gradient ─────────────────────────────────── */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden>
@@ -258,7 +308,7 @@ export default function Footer() {
         >
           {/* Geometric mark — 21.3% of container */}
           <div style={{ width: "21.3%", flexShrink: 0 }}>
-            <ResponsiveMark />
+            <LogoMark />
           </div>
 
           {/* Wordmark — 61.4% of container, top-aligned with shapes */}
