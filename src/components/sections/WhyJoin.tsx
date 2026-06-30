@@ -4,9 +4,9 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const ANIM_VIDEOS = [
-  "/why-join/card-1.mp4",
-  "/why-join/card-2.mp4",
-  "/why-join/card-3.mp4",
+  "/why-join/Animation 01.mp4",
+  "/why-join/Animation 3.mp4",
+  "/why-join/Animatioln 02_1.mp4",
 ];
 
 const CARDS = [
