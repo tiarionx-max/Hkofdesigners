@@ -57,6 +57,38 @@ const RESOURCE_ITEMS = [
 
 const EASE = [0.22, 1, 0.36, 1] as [number, number, number, number];
 
+// ─── Per-link hover/active indicators (from Figma node 17:581) ───
+const LINK_INDICATORS: Record<string, { color: string; shape: "bar" | "dome" | "peak" }> = {
+  "Home":        { color: "#FF3D3D", shape: "bar"  },
+  "About":       { color: "#af52de", shape: "dome" },
+  "Resources":   { color: "#4154f9", shape: "dome" },
+  "Blog/Events": { color: "#ffb522", shape: "peak" },
+};
+
+function NavIndicator({ label }: { label: string }) {
+  const cfg = LINK_INDICATORS[label] ?? { color: "#FF3D3D", shape: "bar" as const };
+  if (cfg.shape === "bar") {
+    return (
+      <span
+        className="block w-full rounded-sm"
+        style={{ height: 3, backgroundColor: cfg.color }}
+      />
+    );
+  }
+  if (cfg.shape === "dome") {
+    return (
+      <svg width="100%" height="10" viewBox="0 0 100 10" preserveAspectRatio="none" aria-hidden="true">
+        <ellipse cx="50" cy="10" rx="48" ry="10" fill={cfg.color} />
+      </svg>
+    );
+  }
+  return (
+    <svg width="100%" height="10" viewBox="0 0 100 10" preserveAspectRatio="none" aria-hidden="true">
+      <polygon points="50,0 2,10 98,10" fill={cfg.color} />
+    </svg>
+  );
+}
+
 // ─── Shared panel animation ───────────────────────────────────────
 const panelVariants = {
   hidden: { opacity: 0, y: 10, scale: 0.97 },
@@ -297,11 +329,14 @@ function NavItem({
   onOpen: () => void;
   onClose: () => void;
 }) {
+  const [isHovered, setIsHovered] = useState(false);
+  const showIndicator = isActive || isHovered;
+
   return (
     <div
       className="relative"
-      onMouseEnter={() => link.dropdown && onOpen()}
-      onMouseLeave={() => link.dropdown && onClose()}
+      onMouseEnter={() => { setIsHovered(true); link.dropdown && onOpen(); }}
+      onMouseLeave={() => { setIsHovered(false); link.dropdown && onClose(); }}
     >
       <Link
         href={link.href}
@@ -312,11 +347,13 @@ function NavItem({
           relative flex flex-col items-center gap-[4px]
           h-[34px] px-[10px] pt-[3.5px] pb-0 overflow-clip
           text-[13.5px] font-normal leading-[1.3] whitespace-nowrap
-          transition-colors duration-150 outline-none
+          transition-colors duration-200 outline-none
           focus-visible:ring-2 focus-visible:ring-[#fffbe8]/40 rounded-sm
           ${isActive
             ? "text-[#fffbe8]"
-            : "text-[rgba(255,251,232,0.7)] hover:text-[#fffbe8]"}
+            : isHovered
+              ? "text-[rgba(255,251,232,0.9)]"
+              : "text-[rgba(255,251,232,0.7)]"}
         `}
       >
         <span className="flex items-center gap-[5px]">
@@ -333,14 +370,21 @@ function NavItem({
           )}
         </span>
 
-        {/* Active indicator */}
-        {isActive && (
-          <span
-            className="shrink-0 w-full rounded-full"
-            style={{ height: 3, background: "linear-gradient(90deg,#FF3D3D 0%,#FF6B4A 100%)" }}
-            aria-hidden="true"
-          />
-        )}
+        <AnimatePresence>
+          {showIndicator && (
+            <motion.span
+              key="indicator"
+              initial={{ opacity: 0, scaleX: 0.5, scaleY: 0.3 }}
+              animate={{ opacity: 1, scaleX: 1, scaleY: 1 }}
+              exit={{ opacity: 0, scaleX: 0.5, scaleY: 0.3 }}
+              transition={{ duration: 0.18, ease: EASE }}
+              className="shrink-0 w-full origin-bottom"
+              aria-hidden="true"
+            >
+              <NavIndicator label={link.label} />
+            </motion.span>
+          )}
+        </AnimatePresence>
       </Link>
     </div>
   );
