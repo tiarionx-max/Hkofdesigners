@@ -417,31 +417,30 @@ export default function Hero() {
         </motion.div>
       </div>
 
-      {/* ── Red ticker band ────────────────────────────────────────── */}
+      {/* ── Red ticker band — scrolling marquee ───────────────────── */}
       <div
-        className="absolute bottom-0 left-1/2 -translate-x-1/2 pointer-events-none overflow-hidden"
-        style={{ width: "102.25%", minWidth: 1280, height: 51.324 }}
+        className="absolute bottom-0 left-0 right-0 pointer-events-none overflow-hidden"
+        style={{ height: 51.324, transform: "rotate(0.35deg)" }}
         aria-hidden="true"
       >
         <div
-          className="absolute inset-0 flex items-center"
-          style={{ transform: "rotate(0.35deg)" }}
+          className="flex items-center w-max animate-marquee"
+          style={{ height: 43.276, backgroundColor: "#ff3b30" }}
         >
-          <div
-            className="flex items-center justify-between w-full bg-[#ff3b30]"
-            style={{ height: 43.276, paddingInline: 86.552 }}
-          >
-            {TICKER.map(({ label, star }) => (
-              <span key={label} className="inline-flex items-center gap-[6px] whitespace-nowrap">
-                <span className="relative inline-block shrink-0" style={{ width: 13.848, height: 13.848 }}>
-                  <Image src={star} alt="" fill className="object-contain" unoptimized />
-                </span>
-                <span className="text-white font-medium" style={{ fontSize: 17.31, lineHeight: 1.3 }}>
-                  {label}
-                </span>
+          {[...TICKER, ...TICKER].map(({ label, star }, i) => (
+            <span
+              key={i}
+              className="inline-flex items-center gap-[6px] whitespace-nowrap"
+              style={{ paddingInline: 32 }}
+            >
+              <span className="relative inline-block shrink-0" style={{ width: 13.848, height: 13.848 }}>
+                <Image src={star} alt="" fill className="object-contain" unoptimized />
               </span>
-            ))}
-          </div>
+              <span className="text-white font-medium" style={{ fontSize: 17.31, lineHeight: 1.3 }}>
+                {label}
+              </span>
+            </span>
+          ))}
         </div>
       </div>
     </section>
