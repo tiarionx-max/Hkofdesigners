@@ -118,9 +118,9 @@ function CardShell({
       onMouseEnter={() => onHoverChange?.(true)}
       whileHover={{ boxShadow: glow }}
       initial={{ boxShadow: NO_GLOW }}
-      transition={{ boxShadow: { duration: 0.3, ease: "easeOut" } }}
+      transition={{ boxShadow: { duration: 0.1, ease: "easeOut" } }}
       className="bg-[#181818] border-[0.593px] border-[rgba(255,255,255,0.1)] overflow-hidden relative rounded-[33.862px] w-full"
-      style={{ height: 254 }}
+      style={{ height: 282 }}
     >
       <img alt="" aria-hidden src={IMG.bgGrid} className="absolute inset-0 w-full h-full object-cover pointer-events-none" />
       {children}
@@ -225,7 +225,7 @@ function Card2() {
 
         {/* Pupil 1 — inset[44.07% 77.77% 37.23% 12.84%] */}
         <div className="absolute overflow-hidden animate-eyeblink"
-          style={{ top: "44.07%", right: "77.77%", bottom: "37.23%", left: "12.84%" }}>
+          style={{ top: "44.07%", right: "77.77%", bottom: "37.23%", left: "12.84%", borderRadius: "50%" }}>
           <motion.div style={{ position: "absolute", inset: "-41.07%", x: a.x, y: a.y }}>
             <img alt="" aria-hidden src={hov ? IMG.eyeHover1 : IMG.purplePupil1} className="block w-full h-full"
               style={{ transition: "opacity 0.25s" }} />
@@ -234,7 +234,7 @@ function Card2() {
 
         {/* Pupil 2 — inset[18.03% 66.02% 63.27% 24.58%] */}
         <div className="absolute overflow-hidden animate-eyeblink"
-          style={{ top: "18.03%", right: "66.02%", bottom: "63.27%", left: "24.58%", animationDelay: "0.18s" }}>
+          style={{ top: "18.03%", right: "66.02%", bottom: "63.27%", left: "24.58%", animationDelay: "0.18s", borderRadius: "50%" }}>
           <motion.div style={{ position: "absolute", inset: "-41.07%", x: b.x, y: b.y }}>
             <img alt="" aria-hidden src={hov ? IMG.eyeHover2 : IMG.purplePupil2} className="block w-full h-full"
               style={{ transition: "opacity 0.25s" }} />
@@ -305,7 +305,7 @@ function Card3() {
 
         {/* Left pupil — inset[53.63% 31.01% 37.96% 61.57%] */}
         <div className="absolute overflow-hidden animate-eyeblink"
-          style={{ top: "53.63%", right: "31.01%", bottom: "37.96%", left: "61.57%" }}>
+          style={{ top: "53.63%", right: "31.01%", bottom: "37.96%", left: "61.57%", borderRadius: "50%" }}>
           <motion.div style={{ position: "absolute", inset: "-69.7%", x: a.x, y: a.y }}>
             <img alt="" aria-hidden src={IMG.bluePupil} className="block w-full h-full" />
           </motion.div>
@@ -313,7 +313,7 @@ function Card3() {
 
         {/* Right pupil — inset[53.63% 51.01% 37.96% 41.57%] */}
         <div className="absolute overflow-hidden animate-eyeblink"
-          style={{ top: "53.63%", right: "51.01%", bottom: "37.96%", left: "41.57%", animationDelay: "0.18s" }}>
+          style={{ top: "53.63%", right: "51.01%", bottom: "37.96%", left: "41.57%", animationDelay: "0.18s", borderRadius: "50%" }}>
           <motion.div style={{ position: "absolute", inset: "-69.7%", x: b.x, y: b.y }}>
             <img alt="" aria-hidden src={IMG.bluePupil} className="block w-full h-full" />
           </motion.div>
@@ -338,7 +338,7 @@ function Card3() {
 // Eye2 centre in card: (572.25, 184.46) → frac (0.872, 0.726)
 function Card4() {
   const [hov, setHov] = useState(false);
-  const { cardRef, onMouseMove, onMouseLeave, a, b } = usePupilSprings(
+  const { cardRef, onMouseMove, onMouseLeave } = usePupilSprings(
     [0.784, 0.726], [0.872, 0.726], 14,
   );
 
@@ -383,31 +383,27 @@ function Card4() {
           </motion.div>
         </div>
 
-        {/* Eyes — grow on hover, spring-tracked */}
-        <div className="absolute flex items-center"
+        {/* Eyes — grow on hover, image swap */}
+        <div className="absolute flex items-center gap-1"
           style={{ left: "50%", top: 122.39, transform: "translateX(-50%)" }}>
           {/* Eye 1 */}
           <motion.div
-            className="relative overflow-hidden animate-eyeblink flex-none"
+            className="relative overflow-hidden animate-eyeblink flex-none rounded-full"
             animate={{ width: eyeSize, height: eyeSize }}
             transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
           >
-            <motion.div style={{ position: "absolute", inset: 0, x: a.x, y: a.y }}>
-              <motion.img alt="" aria-hidden src={IMG.yellowEye1} animate={{ opacity: hov ? 0 : 1 }} transition={{ duration: 0.2 }} className="absolute inset-0 w-full h-full" />
-              <motion.img alt="" aria-hidden src={IMG.yellowEye1H} animate={{ opacity: hov ? 1 : 0 }} transition={{ duration: 0.2 }} className="absolute inset-0 w-full h-full" />
-            </motion.div>
+            <motion.img alt="" aria-hidden src={IMG.yellowEye1} animate={{ opacity: hov ? 0 : 1 }} transition={{ duration: 0.2 }} className="absolute inset-0 w-full h-full object-cover" />
+            <motion.img alt="" aria-hidden src={IMG.yellowEye1H} animate={{ opacity: hov ? 1 : 0 }} transition={{ duration: 0.2 }} className="absolute inset-0 w-full h-full object-cover" />
           </motion.div>
           {/* Eye 2 */}
           <motion.div
-            className="relative overflow-hidden animate-eyeblink flex-none"
+            className="relative overflow-hidden animate-eyeblink flex-none rounded-full"
             animate={{ width: eyeSize, height: eyeSize }}
             transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
             style={{ animationDelay: "0.18s" }}
           >
-            <motion.div style={{ position: "absolute", inset: 0, x: b.x, y: b.y }}>
-              <motion.img alt="" aria-hidden src={IMG.yellowEye2} animate={{ opacity: hov ? 0 : 1 }} transition={{ duration: 0.2 }} className="absolute inset-0 w-full h-full" />
-              <motion.img alt="" aria-hidden src={IMG.yellowEye2H} animate={{ opacity: hov ? 1 : 0 }} transition={{ duration: 0.2 }} className="absolute inset-0 w-full h-full" />
-            </motion.div>
+            <motion.img alt="" aria-hidden src={IMG.yellowEye2} animate={{ opacity: hov ? 0 : 1 }} transition={{ duration: 0.2 }} className="absolute inset-0 w-full h-full object-cover" />
+            <motion.img alt="" aria-hidden src={IMG.yellowEye2H} animate={{ opacity: hov ? 1 : 0 }} transition={{ duration: 0.2 }} className="absolute inset-0 w-full h-full object-cover" />
           </motion.div>
         </div>
       </div>
@@ -418,12 +414,12 @@ function Card4() {
 // ── Section ───────────────────────────────────────────────────────────────────
 export default function Features() {
   return (
-    <section className="bg-[#101010] relative py-20 md:py-28 overflow-hidden">
+    <section className="bg-[#101010] relative py-16 md:py-24 overflow-hidden">
       <div className="absolute inset-x-0 top-0 h-[900px] pointer-events-none" aria-hidden>
         <img src={IMG.bgGrid} alt="" className="absolute inset-0 w-full h-full object-cover opacity-30" />
       </div>
 
-      <div className="container-hk relative z-10">
+      <div className="relative z-10 w-full max-w-[1200px] mx-auto px-5 lg:px-8">
         {/* Heading */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
