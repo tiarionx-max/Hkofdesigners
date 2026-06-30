@@ -32,7 +32,7 @@ export default function WhyJoin() {
               className="flex flex-col gap-5"
             >
               {/* Image placeholder */}
-              <div className="relative aspect-[16/9] rounded-[16px] overflow-hidden bg-[#181818]">
+              <div className="relative aspect-[4/5] rounded-[16px] overflow-hidden bg-[#181818]">
                 <Image
                   src={reason.image}
                   alt={reason.title}

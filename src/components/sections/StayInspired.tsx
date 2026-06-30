@@ -58,16 +58,16 @@ export default function StayInspired() {
             className="rounded-[20px] bg-[#181818] border border-[rgba(255,255,255,0.08)] p-7 flex flex-col gap-6 overflow-hidden group"
           >
             {/* Visual area */}
-            <div className="relative h-[140px] rounded-[12px] bg-[#0f0f0f] border border-[rgba(255,255,255,0.06)] flex items-center justify-center overflow-hidden">
+            <div className="relative h-[240px] rounded-[12px] bg-[#0f0f0f] border border-[rgba(255,255,255,0.06)] flex items-center justify-center overflow-hidden">
               {/* Abstract color swatches */}
               <div className="flex gap-2">
                 {["#FF3D3D", "#ffb522", "#4169FF", "#00D084", "#8B5CF6", "#FF6B35"].map(
                   (color, i) => (
                     <motion.div
                       key={i}
-                      className="w-8 h-16 rounded-full"
+                      className="w-8 h-24 rounded-full"
                       style={{ backgroundColor: color }}
-                      animate={{ y: [0, -6, 0] }}
+                      animate={{ y: [0, -8, 0] }}
                       transition={{
                         duration: 2 + i * 0.3,
                         repeat: Infinity,
@@ -123,7 +123,7 @@ export default function StayInspired() {
             className="rounded-[20px] bg-[#181818] border border-[rgba(255,255,255,0.08)] p-7 flex flex-col gap-6 overflow-hidden group"
           >
             {/* Visual area */}
-            <div className="relative h-[140px] rounded-[12px] bg-[#0f0f0f] border border-[rgba(255,255,255,0.06)] flex items-center justify-center overflow-hidden">
+            <div className="relative h-[240px] rounded-[12px] bg-[#0f0f0f] border border-[rgba(255,255,255,0.06)] flex items-center justify-center overflow-hidden">
               {/* Playlist visual */}
               <div className="flex gap-1 items-end">
                 {[20, 35, 50, 40, 60, 45, 55, 30, 65, 38, 52, 28].map((h, i) => (
