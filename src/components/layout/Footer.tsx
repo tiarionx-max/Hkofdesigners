@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 
-
 // ── Data ──────────────────────────────────────────────────────────────────────
 const NAV_LINKS = [
   { label: "Home",      href: "/" },
@@ -26,14 +25,12 @@ const WORDS = [
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
-// ── CyclingWord — same blur+fade+y animation as the hero ─────────────────────
+// ── CyclingWord — blur+fade+y, identical to Hero ──────────────────────────────
 function CyclingWord() {
   const [index, setIndex] = useState(0);
 
   useEffect(() => {
-    const id = setInterval(() => {
-      setIndex(i => (i + 1) % WORDS.length);
-    }, 2800);
+    const id = setInterval(() => setIndex(i => (i + 1) % WORDS.length), 2800);
     return () => clearInterval(id);
   }, []);
 
@@ -55,7 +52,82 @@ function CyclingWord() {
   );
 }
 
-// ── Social icons (inline SVG so they never expire) ────────────────────────────
+// ── HK geometric mark — 2×2 grid matching Figma proportions ──────────────────
+// Figma: shapes group 272×262px. Each shape ≈ 124×121px with ~24px gap.
+// The grid is nearly square overall.
+function HKMark({ size }: { size: number }) {
+  const gap  = Math.round(size * 0.096);  // ~24px at 250px total
+  const cell = Math.round((size - gap) / 2);
+  const r    = Math.round(cell * 0.065);  // corner radius ~8px at 124px cell
+
+  return (
+    <div
+      aria-hidden
+      style={{
+        display: "grid",
+        gridTemplateColumns: `${cell}px ${cell}px`,
+        gridTemplateRows:    `${cell}px ${cell}px`,
+        gap: `${gap}px`,
+        flexShrink: 0,
+      }}
+    >
+      {/* Red square — top-left */}
+      <div style={{ background: "#FF3D3D", borderRadius: r }} />
+
+      {/* Purple circle ring — top-right */}
+      <div style={{
+        borderRadius: "50%",
+        border: `${Math.round(cell * 0.105)}px solid #8B5CF6`,
+        boxSizing: "border-box",
+      }} />
+
+      {/* Blue arch (half-circle, dome up) — bottom-left */}
+      <div style={{ display: "flex", alignItems: "flex-end" }}>
+        <div style={{
+          width: "100%",
+          height: cell / 2,
+          background: "#4169FF",
+          borderTopLeftRadius:  cell,
+          borderTopRightRadius: cell,
+        }} />
+      </div>
+
+      {/* Gold upward triangle — bottom-right */}
+      <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "center" }}>
+        <div style={{
+          width: 0,
+          height: 0,
+          borderLeft:   `${cell / 2}px solid transparent`,
+          borderRight:  `${cell / 2}px solid transparent`,
+          borderBottom: `${Math.round(cell * 0.84)}px solid #ffb522`,
+        }} />
+      </div>
+    </div>
+  );
+}
+
+// ── Responsive HKMark — uses CSS custom property via container observation ─────
+// Simplest approach: fixed sizes at each breakpoint via inline style + viewport calc.
+function ResponsiveMark() {
+  const [size, setSize] = useState(120);
+
+  useEffect(() => {
+    const calc = () => {
+      const vw = window.innerWidth;
+      if (vw >= 1280) setSize(252);
+      else if (vw >= 1024) setSize(Math.round(vw * 0.197));
+      else if (vw >= 640)  setSize(Math.round(vw * 0.22));
+      else                 setSize(Math.round(vw * 0.28));
+    };
+    calc();
+    window.addEventListener("resize", calc);
+    return () => window.removeEventListener("resize", calc);
+  }, []);
+
+  return <HKMark size={size} />;
+}
+
+// ── Social icons ──────────────────────────────────────────────────────────────
 function IconX() {
   return (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
@@ -81,33 +153,82 @@ function IconTiktok() {
 }
 
 const SOCIALS = [
-  { label: "X (Twitter)", href: "https://x.com",         icon: <IconX /> },
-  { label: "Instagram",   href: "https://instagram.com",  icon: <IconInstagram /> },
-  { label: "TikTok",      href: "https://tiktok.com",     icon: <IconTiktok /> },
+  { label: "X (Twitter)", href: "https://x.com",        icon: <IconX /> },
+  { label: "Instagram",   href: "https://instagram.com", icon: <IconInstagram /> },
+  { label: "TikTok",      href: "https://tiktok.com",    icon: <IconTiktok /> },
 ];
 
 // ── Footer ────────────────────────────────────────────────────────────────────
 export default function Footer() {
   return (
-    <footer className="bg-[#111] overflow-hidden">
-      {/* ── Top content box ──────────────────────────────────────────────── */}
-      <div className="max-w-[1280px] mx-auto px-5 lg:px-0">
+    <footer className="bg-[#111] overflow-hidden relative">
 
-        {/* Horizontal rule top */}
+      {/* ── Animated atmospheric gradient ─────────────────────────────────── */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden>
+        <style>{`
+          @keyframes orb1 {
+            0%,100% { transform: translate(0%, 0%)   scale(1);    }
+            40%     { transform: translate(12%, -8%)  scale(1.08); }
+            70%     { transform: translate(-6%, 6%)   scale(0.95); }
+          }
+          @keyframes orb2 {
+            0%,100% { transform: translate(0%, 0%)   scale(1);    }
+            35%     { transform: translate(-10%, 5%)  scale(1.06); }
+            65%     { transform: translate(8%, -4%)   scale(0.97); }
+          }
+          @keyframes orb3 {
+            0%,100% { transform: translate(0%, 0%)   scale(1);    }
+            50%     { transform: translate(5%, -10%)  scale(1.04); }
+          }
+        `}</style>
+
+        {/* Blue-violet orb — left */}
+        <div style={{
+          position: "absolute",
+          width: 700, height: 500,
+          left: "-15%", top: "-20%",
+          background: "radial-gradient(circle, rgba(65,84,249,0.18) 0%, transparent 70%)",
+          filter: "blur(60px)",
+          animation: "orb1 14s ease-in-out infinite",
+          willChange: "transform",
+        }} />
+
+        {/* Purple orb — right */}
+        <div style={{
+          position: "absolute",
+          width: 600, height: 480,
+          right: "-10%", top: "-10%",
+          background: "radial-gradient(circle, rgba(139,92,246,0.14) 0%, transparent 70%)",
+          filter: "blur(70px)",
+          animation: "orb2 18s ease-in-out infinite",
+          willChange: "transform",
+        }} />
+
+        {/* Warm amber orb — center-bottom */}
+        <div style={{
+          position: "absolute",
+          width: 550, height: 400,
+          left: "30%", bottom: "-20%",
+          background: "radial-gradient(circle, rgba(255,181,34,0.10) 0%, transparent 70%)",
+          filter: "blur(80px)",
+          animation: "orb3 22s ease-in-out infinite",
+          willChange: "transform",
+        }} />
+      </div>
+
+      {/* ── Content ───────────────────────────────────────────────────────── */}
+      <div className="relative z-10 max-w-[1280px] mx-auto px-5 lg:px-8">
+
+        {/* Top rule */}
         <div className="border-t border-[rgba(255,255,255,0.08)]" />
 
         {/* Top bar — tagline + nav */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-5 py-7 px-0 lg:px-0">
-          {/* Tagline with cycling word */}
-          <p className="font-semibold text-[#fffbe8] text-[clamp(16px,1.8vw,25px)] leading-[1.3] whitespace-nowrap">
-            A Creative Home for{" "}
-            <CyclingWord />
-            {" "}Designer.
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 py-[clamp(20px,2.2vw,28px)]">
+          <p className="font-semibold text-[#fffbe8] text-[clamp(15px,1.8vw,25px)] leading-[1.3] whitespace-nowrap">
+            A Creative Home for{" "}<CyclingWord />{" "}Designer.
           </p>
-
-          {/* Nav */}
-          <nav className="flex flex-wrap gap-x-5 gap-y-2" aria-label="Footer navigation">
-            {NAV_LINKS.map((link) => (
+          <nav className="flex flex-wrap gap-x-[clamp(14px,1.8vw,27px)] gap-y-2" aria-label="Footer navigation">
+            {NAV_LINKS.map(link => (
               <Link
                 key={link.label}
                 href={link.href}
@@ -119,54 +240,48 @@ export default function Footer() {
           </nav>
         </div>
 
-        {/* Horizontal rule below top bar */}
+        {/* Rule below top bar */}
         <div className="border-t border-[rgba(255,255,255,0.08)]" />
 
-        {/* ── Hero logo area ──────────────────────────────────────────────── */}
-        <div className="relative py-10 md:py-14 flex items-center justify-center gap-[clamp(16px,3vw,52px)]">
-
-          {/* Geometric mark — 2×2 grid of CSS shapes */}
-          <div className="grid grid-cols-2 gap-[clamp(4px,0.6vw,8px)] flex-none self-center" aria-hidden>
-            {/* Red square */}
-            <div className="rounded-[clamp(4px,0.5vw,7px)]"
-              style={{ width: "clamp(28px,4.5vw,60px)", height: "clamp(28px,4.5vw,60px)", background: "#FF3D3D" }} />
-            {/* Purple circle */}
-            <div className="rounded-full border-[clamp(3px,0.5vw,6px)]"
-              style={{ width: "clamp(28px,4.5vw,60px)", height: "clamp(28px,4.5vw,60px)", borderColor: "#8B5CF6" }} />
-            {/* Blue arch */}
-            <div className="rounded-t-full"
-              style={{ width: "clamp(28px,4.5vw,60px)", height: "clamp(14px,2.25vw,30px)", marginTop: "clamp(14px,2.25vw,30px)", background: "#4169FF" }} />
-            {/* Gold triangle */}
-            <div className="flex items-end justify-center">
-              <div style={{
-                width: 0, height: 0,
-                borderLeft:   "clamp(14px,2.25vw,30px) solid transparent",
-                borderRight:  "clamp(14px,2.25vw,30px) solid transparent",
-                borderBottom: "clamp(24px,3.9vw,52px) solid #ffb522",
-              }} />
-            </div>
+        {/* ── Logo hero area ─────────────────────────────────────────────── */}
+        {/*
+          Figma proportions (canvas 1280px):
+            shapes group: 272.7px = 21.3%
+            gap:           52.6px = 4.1%
+            text:         785.4px = 61.4%
+          → shapes:text ≈ 1 : 2.88
+          We replicate this with flex and percentage-based widths.
+        */}
+        <div
+          className="flex items-start py-[clamp(28px,3.8vw,48px)]"
+          style={{ gap: "4.1%" }}
+        >
+          {/* Geometric mark — 21.3% of container */}
+          <div style={{ width: "21.3%", flexShrink: 0 }}>
+            <ResponsiveMark />
           </div>
 
-          {/* Wordmark — clean text, no image dependency */}
-          <h2
-            className="font-semibold text-[#fffbe8] leading-[0.92] tracking-tight select-none"
-            style={{ fontSize: "clamp(52px,9.5vw,122px)" }}
-          >
-            HK of<br />Designers
-          </h2>
+          {/* Wordmark — 61.4% of container, top-aligned with shapes */}
+          <div style={{ width: "61.4%", flexShrink: 0 }}>
+            <h2
+              className="font-semibold text-[#fffbe8] leading-[0.9] tracking-[-0.02em] select-none"
+              style={{ fontSize: "clamp(40px,9.5vw,122px)" }}
+            >
+              HK of<br />Designers
+            </h2>
+          </div>
         </div>
 
-        {/* Horizontal rule above bottom bar */}
+        {/* Rule above bottom bar */}
         <div className="border-t border-[rgba(255,255,255,0.08)]" />
 
-        {/* ── Bottom bar — copyright + socials ──────────────────────────── */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 py-5">
-          <p className="text-[clamp(12px,1.1vw,17px)] text-[#fffbe8] font-normal leading-[1.3] opacity-90">
+        {/* Bottom bar — copyright + socials */}
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 py-[clamp(16px,1.8vw,24px)]">
+          <p className="text-[clamp(12px,1.1vw,17px)] text-[#fffbe8] font-normal leading-[1.3]">
             © 2026 HK of Designers. All rights reserved
           </p>
-
           <div className="flex items-center gap-3">
-            {SOCIALS.map((s) => (
+            {SOCIALS.map(s => (
               <Link
                 key={s.label}
                 href={s.href}
@@ -181,7 +296,7 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Bottom padding */}
+        {/* Bottom rule */}
         <div className="border-t border-[rgba(255,255,255,0.08)]" />
       </div>
     </footer>
