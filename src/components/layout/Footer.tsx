@@ -26,7 +26,12 @@ const WORDS = [
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
-// ── CyclingWord — blur+fade+y, identical to Hero ──────────────────────────────
+// Combined logo PNG — shapes mark + wordmark as one asset from Figma node 62:924.
+// Replace src with "/hk-logo-full.png" once saved to /public/.
+const HK_LOGO_SRC = "https://www.figma.com/api/mcp/asset/0edc94d6-06f4-4d50-b172-5c7cbdb5213f";
+const HK_LOGO_LOCAL = "/hk-logo-full.png";
+
+// ── CyclingWord ───────────────────────────────────────────────────────────────
 function CyclingWord() {
   const [index, setIndex] = useState(0);
 
@@ -51,110 +56,6 @@ function CyclingWord() {
       </motion.span>
     </AnimatePresence>
   );
-}
-
-// ── HK geometric mark — 2×2 grid matching Figma proportions ──────────────────
-// Figma: shapes group 272×262px. Each shape ≈ 124×121px with ~24px gap.
-// The grid is nearly square overall.
-function HKMark({ size }: { size: number }) {
-  const gap  = Math.round(size * 0.096);  // ~24px at 250px total
-  const cell = Math.round((size - gap) / 2);
-  const r    = Math.round(cell * 0.065);  // corner radius ~8px at 124px cell
-
-  return (
-    <div
-      aria-hidden
-      style={{
-        display: "grid",
-        gridTemplateColumns: `${cell}px ${cell}px`,
-        gridTemplateRows:    `${cell}px ${cell}px`,
-        gap: `${gap}px`,
-        flexShrink: 0,
-      }}
-    >
-      {/* Red square — top-left */}
-      <div style={{ background: "#FF3D3D", borderRadius: r }} />
-
-      {/* Purple circle ring — top-right */}
-      <div style={{
-        borderRadius: "50%",
-        border: `${Math.round(cell * 0.105)}px solid #8B5CF6`,
-        boxSizing: "border-box",
-      }} />
-
-      {/* Blue arch (half-circle, dome up) — bottom-left */}
-      <div style={{ display: "flex", alignItems: "flex-end" }}>
-        <div style={{
-          width: "100%",
-          height: cell / 2,
-          background: "#4169FF",
-          borderTopLeftRadius:  cell,
-          borderTopRightRadius: cell,
-        }} />
-      </div>
-
-      {/* Gold upward triangle — bottom-right */}
-      <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "center" }}>
-        <div style={{
-          width: 0,
-          height: 0,
-          borderLeft:   `${cell / 2}px solid transparent`,
-          borderRight:  `${cell / 2}px solid transparent`,
-          borderBottom: `${Math.round(cell * 0.84)}px solid #ffb522`,
-        }} />
-      </div>
-    </div>
-  );
-}
-
-// ── Logo mark — image if committed, CSS shapes fallback ───────────────────────
-const LOGO_IMAGE = "/hk-mark.png";
-
-function LogoMark() {
-  const [useImage, setUseImage] = useState(false);
-
-  useEffect(() => {
-    fetch(LOGO_IMAGE, { method: "HEAD" }).then(r => {
-      if (r.ok) setUseImage(true);
-    }).catch(() => {});
-  }, []);
-
-  if (useImage) {
-    return (
-      <div style={{ width: "100%", aspectRatio: "1 / 1" }}>
-        <Image
-          src={LOGO_IMAGE}
-          alt="HK of Designers mark"
-          width={252}
-          height={252}
-          style={{ width: "100%", height: "auto" }}
-          onError={() => setUseImage(false)}
-          priority={false}
-        />
-      </div>
-    );
-  }
-  return <ResponsiveMark />;
-}
-
-// ── Responsive HKMark — CSS shapes fallback ────────────────────────────────────
-function ResponsiveMark() {
-  const [size, setSize] = useState(120);
-
-  useEffect(() => {
-    const calc = () => {
-      const vw = window.innerWidth;
-      if (vw >= 1280) setSize(252);
-      else if (vw >= 1024) setSize(Math.round(vw * 0.197));
-      else if (vw >= 640)  setSize(Math.round(vw * 0.22));
-      else                 setSize(Math.round(vw * 0.28));
-    };
-    calc();
-    window.addEventListener("resize", calc);
-    return () => window.removeEventListener("resize", calc);
-  }, []);
-
-  return <HKMark size={size} />;
 }
 
 // ── Social icons ──────────────────────────────────────────────────────────────
@@ -188,6 +89,35 @@ const SOCIALS = [
   { label: "TikTok",      href: "https://tiktok.com",    icon: <IconTiktok /> },
 ];
 
+// ── HK Logo — combined PNG (shapes + wordmark as one image) ───────────────────
+function HKLogo() {
+  const [src, setSrc] = useState(HK_LOGO_LOCAL);
+
+  useEffect(() => {
+    fetch(HK_LOGO_LOCAL, { method: "HEAD" })
+      .then(r => { if (!r.ok) setSrc(HK_LOGO_SRC); })
+      .catch(() => setSrc(HK_LOGO_SRC));
+  }, []);
+
+  return (
+    <div className="w-full">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={src}
+        alt="HK of Designers"
+        style={{
+          width: "100%",
+          height: "auto",
+          display: "block",
+          objectFit: "contain",
+          objectPosition: "left center",
+        }}
+        onError={() => { if (src !== HK_LOGO_SRC) setSrc(HK_LOGO_SRC); }}
+      />
+    </div>
+  );
+}
+
 // ── Footer ────────────────────────────────────────────────────────────────────
 export default function Footer() {
   const footerRef = useRef<HTMLElement>(null);
@@ -197,7 +127,7 @@ export default function Footer() {
   const spotBg = useTransform(
     [spotX, spotY],
     ([x, y]) =>
-      `radial-gradient(circle 520px at ${x}% ${y}%, rgba(255,251,232,0.045) 0%, transparent 65%)`
+      `radial-gradient(circle 560px at ${x}% ${y}%, rgba(255,251,232,0.05) 0%, transparent 65%)`
   );
 
   function handleMouseMove(e: React.MouseEvent<HTMLElement>) {
@@ -213,14 +143,15 @@ export default function Footer() {
       onMouseMove={handleMouseMove}
       className="bg-[#111] overflow-hidden relative"
     >
-      {/* cursor spotlight */}
+
+      {/* ── Cursor spotlight ──────────────────────────────────────────────── */}
       <motion.div
         aria-hidden
         className="absolute inset-0 pointer-events-none"
         style={{ background: spotBg, zIndex: 1 }}
       />
 
-      {/* ── Animated atmospheric gradient ─────────────────────────────────── */}
+      {/* ── Atmospheric gradient orbs ─────────────────────────────────────── */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden>
         <style>{`
           @keyframes orb1 {
@@ -239,32 +170,24 @@ export default function Footer() {
           }
         `}</style>
 
-        {/* Blue-violet orb — left */}
         <div style={{
-          position: "absolute",
-          width: 700, height: 500,
+          position: "absolute", width: 700, height: 500,
           left: "-15%", top: "-20%",
           background: "radial-gradient(circle, rgba(65,84,249,0.18) 0%, transparent 70%)",
           filter: "blur(60px)",
           animation: "orb1 14s ease-in-out infinite",
           willChange: "transform",
         }} />
-
-        {/* Purple orb — right */}
         <div style={{
-          position: "absolute",
-          width: 600, height: 480,
+          position: "absolute", width: 600, height: 480,
           right: "-10%", top: "-10%",
           background: "radial-gradient(circle, rgba(139,92,246,0.14) 0%, transparent 70%)",
           filter: "blur(70px)",
           animation: "orb2 18s ease-in-out infinite",
           willChange: "transform",
         }} />
-
-        {/* Warm amber orb — center-bottom */}
         <div style={{
-          position: "absolute",
-          width: 550, height: 400,
+          position: "absolute", width: 550, height: 400,
           left: "30%", bottom: "-20%",
           background: "radial-gradient(circle, rgba(255,181,34,0.10) 0%, transparent 70%)",
           filter: "blur(80px)",
@@ -300,33 +223,9 @@ export default function Footer() {
         {/* Rule below top bar */}
         <div className="border-t border-[rgba(255,255,255,0.08)]" />
 
-        {/* ── Logo hero area ─────────────────────────────────────────────── */}
-        {/*
-          Figma proportions (canvas 1280px):
-            shapes group: 272.7px = 21.3%
-            gap:           52.6px = 4.1%
-            text:         785.4px = 61.4%
-          → shapes:text ≈ 1 : 2.88
-          We replicate this with flex and percentage-based widths.
-        */}
-        <div
-          className="flex items-start py-[clamp(28px,3.8vw,48px)]"
-          style={{ gap: "4.1%" }}
-        >
-          {/* Geometric mark — 21.3% of container */}
-          <div style={{ width: "21.3%", flexShrink: 0 }}>
-            <LogoMark />
-          </div>
-
-          {/* Wordmark — 61.4% of container, top-aligned with shapes */}
-          <div style={{ width: "61.4%", flexShrink: 0 }}>
-            <h2
-              className="font-semibold text-[#fffbe8] leading-[0.9] tracking-[-0.02em] select-none"
-              style={{ fontSize: "clamp(40px,9.5vw,122px)" }}
-            >
-              HK of<br />Designers
-            </h2>
-          </div>
+        {/* ── Logo hero — full-width combined PNG ───────────────────────────── */}
+        <div className="py-[clamp(24px,3vw,40px)]">
+          <HKLogo />
         </div>
 
         {/* Rule above bottom bar */}
