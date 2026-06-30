@@ -1,43 +1,37 @@
 "use client";
 
-import { useRef, useState, useEffect } from "react";
-import { motion, useMotionValue, useSpring, useTransform, AnimatePresence } from "framer-motion";
+import { useState } from "react";
+import { motion } from "framer-motion";
 
-const SQUIGGLE_LEFT  = "https://www.figma.com/api/mcp/asset/38d7070c-94f6-49b9-b87a-cd227c32c8f9";
-const SQUIGGLE_RIGHT = "https://www.figma.com/api/mcp/asset/f809fcc4-9886-431a-918d-43a51510efca";
+// Figma assets
+const SQUIGGLE_LEFT  = "https://www.figma.com/api/mcp/asset/f03f7ef1-5d32-4a0f-9bec-4f71d6d06510";
+const SQUIGGLE_RIGHT = "https://www.figma.com/api/mcp/asset/8f8c2ddc-68d0-4ee2-8280-a0e1be726be5";
+const ARROW_ICON     = "https://www.figma.com/api/mcp/asset/8d61736b-dfff-460b-b603-568ea1bbff12";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
-// Grid cell positions that get the darker tint (row, col) — 0-indexed
+// Dark cells (row-col) extracted from Figma — 0-indexed, 19 cols × 16 rows
 const DARK_CELLS = new Set([
-  "0-3","0-11","0-16",
-  "1-6","1-14",
-  "2-1","2-9","2-18",
-  "3-4","3-13",
-  "4-7","4-15",
-  "5-2","5-10","5-17",
-  "6-5","6-12",
-  "7-0","7-8","7-18",
+  "2-12","4-16","5-3","5-4","7-17","9-0","9-8",
+  "11-5","13-5","15-16","16-4","16-8",
 ]);
 
-const COLS = 20;
-const ROWS = 8;
+const COLS = 19;
+const ROWS = 16;
+const CELL = 57.698;
 
 function Grid() {
   return (
-    <div
-      className="absolute inset-0 pointer-events-none overflow-hidden"
-      style={{ zIndex: 0 }}
-    >
+    <div className="absolute inset-0 overflow-hidden pointer-events-none" style={{ zIndex: 0 }}>
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: `repeat(${COLS}, 68px)`,
-          gridTemplateRows: `repeat(${ROWS}, 68px)`,
-          width: COLS * 68,
-          height: ROWS * 68,
+          gridTemplateColumns: `repeat(${COLS}, ${CELL}px)`,
+          gridTemplateRows:    `repeat(${ROWS}, ${CELL}px)`,
+          width:  COLS * CELL,
+          height: ROWS * CELL,
           position: "absolute",
-          top: "50%",
+          top:  "50%",
           left: "50%",
           transform: "translate(-50%, -50%)",
         }}
@@ -45,13 +39,13 @@ function Grid() {
         {Array.from({ length: ROWS * COLS }).map((_, idx) => {
           const row = Math.floor(idx / COLS);
           const col = idx % COLS;
-          const key = `${row}-${col}`;
+          const dark = DARK_CELLS.has(`${row}-${col}`);
           return (
             <div
-              key={key}
+              key={idx}
               style={{
-                border: "1px solid rgba(14,198,59,0.06)",
-                background: DARK_CELLS.has(key) ? "rgba(1,69,14,0.07)" : "transparent",
+                border:     "0.962px solid rgba(14,198,59,0.05)",
+                background: dark ? "rgba(1,69,14,0.07)" : "transparent",
               }}
             />
           );
@@ -61,51 +55,51 @@ function Grid() {
   );
 }
 
-function JoinButton() {
+function CTAButtons() {
   const [hovered, setHovered] = useState(false);
-  const shimX = useMotionValue(-100);
-  const shimXSpring = useSpring(shimX, { stiffness: 200, damping: 30 });
-
-  const handleEnter = () => {
-    setHovered(true);
-    shimX.set(110);
-  };
-  const handleLeave = () => {
-    setHovered(false);
-    shimX.set(-100);
-  };
 
   return (
-    <a
-      href="#"
-      onMouseEnter={handleEnter}
-      onMouseLeave={handleLeave}
-      className="relative inline-flex items-center gap-3 overflow-hidden rounded-full px-7 h-[52px] md:h-[56px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0f0f0f]/50"
-      style={{ background: "#0f0f0f" }}
-    >
-      {/* Shimmer */}
-      <motion.span
-        className="absolute inset-y-0 pointer-events-none"
-        style={{
-          width: "50%",
-          left: useTransform(shimXSpring, v => `${v}%`),
-          background: "linear-gradient(90deg, transparent 0%, rgba(255,251,232,0.12) 50%, transparent 100%)",
-        }}
-      />
-      <span className="relative z-10 text-[#fffbe8] font-semibold text-[15px] md:text-[17px] whitespace-nowrap">
-        Join Community
-      </span>
-      {/* Arrow circle */}
-      <motion.span
-        animate={hovered ? { x: 2, y: -2 } : { x: 0, y: 0 }}
+    <div className="flex items-center">
+      {/* "Join Community" pill */}
+      <motion.a
+        href="#"
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+        animate={hovered ? { paddingRight: 28 } : { paddingRight: 20 }}
         transition={{ duration: 0.22, ease: EASE }}
-        className="relative z-10 flex items-center justify-center rounded-full size-8 bg-[#fffbe8]"
+        className="relative overflow-hidden inline-flex items-center justify-center h-[42px] pl-5 rounded-full bg-[#0f0f0f] border border-[rgba(0,0,0,0.1)] whitespace-nowrap"
+        style={{ paddingRight: 20 }}
       >
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0f0f0f" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M7 17L17 7M17 7H7M17 7v10" />
-        </svg>
-      </motion.span>
-    </a>
+        {/* Shimmer on hover */}
+        <motion.span
+          className="absolute inset-0 pointer-events-none"
+          animate={hovered ? { opacity: 1, x: "100%" } : { opacity: 0, x: "-100%" }}
+          initial={{ opacity: 0, x: "-100%" }}
+          transition={{ duration: 0.5, ease: EASE }}
+          style={{
+            background: "linear-gradient(90deg, transparent 0%, rgba(255,251,232,0.1) 50%, transparent 100%)",
+          }}
+        />
+        <span className="relative z-10 font-semibold text-[#fffbe8] text-[15px] leading-[1.3]">
+          Join Community
+        </span>
+      </motion.a>
+
+      {/* Circle arrow button */}
+      <motion.a
+        href="#"
+        whileHover={{ x: 2, y: -2 }}
+        transition={{ duration: 0.18, ease: EASE }}
+        className="ml-1 inline-flex items-center justify-center size-[42px] rounded-full bg-[#0f0f0f] border border-[rgba(0,0,0,0.1)] flex-none"
+      >
+        <img
+          src={ARROW_ICON}
+          alt="Join"
+          className="size-[17px] object-contain"
+          style={{ transform: "rotate(180deg) scaleY(-1)" }}
+        />
+      </motion.a>
+    </div>
   );
 }
 
@@ -118,52 +112,50 @@ export default function CTABanner() {
           whileInView={{ opacity: 1, y: 0, scale: 1 }}
           viewport={{ once: true, margin: "-60px" }}
           transition={{ duration: 0.7, ease: EASE }}
-          className="relative rounded-[32px] md:rounded-[40px] overflow-hidden bg-[#fffbe8]"
-          style={{ minHeight: 440 }}
+          className="relative rounded-[40px] overflow-hidden bg-[#fffbe8]"
+          style={{ minHeight: 420 }}
         >
           {/* Grid background */}
           <Grid />
 
-          {/* Left squiggle */}
+          {/* Left squiggle — yellow/orange, left-center */}
           <img
             src={SQUIGGLE_LEFT}
             alt="" aria-hidden
-            className="absolute left-0 bottom-0 w-[180px] md:w-[240px] pointer-events-none select-none opacity-80"
-            style={{ zIndex: 1 }}
+            className="absolute pointer-events-none select-none"
+            style={{
+              left: "4%",
+              top: "35%",
+              width: 62,
+              zIndex: 1,
+            }}
           />
 
-          {/* Right squiggle */}
+          {/* Right squiggle — purple, bottom-right */}
           <img
             src={SQUIGGLE_RIGHT}
             alt="" aria-hidden
-            className="absolute right-0 top-0 w-[180px] md:w-[240px] pointer-events-none select-none opacity-80"
-            style={{ zIndex: 1 }}
+            className="absolute pointer-events-none select-none"
+            style={{
+              right: "6%",
+              bottom: "15%",
+              width: 62,
+              zIndex: 1,
+              transform: "rotate(180deg) scaleY(-1)",
+            }}
           />
 
           {/* Content */}
-          <div className="relative z-10 flex flex-col items-center text-center px-6 py-16 md:py-24 gap-6 md:gap-8">
-
-            {/* Decorative dots row */}
-            <div className="flex items-center gap-2">
-              {["#FF3D3D","#ffb522","#4154f9","#00D084","#8B5CF6"].map((c, i) => (
-                <motion.span
-                  key={i}
-                  className="block w-2 h-2 rounded-full"
-                  style={{ backgroundColor: c }}
-                  animate={{ scale: [1, 1.35, 1] }}
-                  transition={{ duration: 2.2, repeat: Infinity, delay: i * 0.22 }}
-                />
-              ))}
-            </div>
+          <div className="relative z-10 flex flex-col items-center text-center px-6 py-16 md:py-20 gap-5 md:gap-6">
 
             {/* Headline */}
             <motion.h2
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.6, ease: EASE, delay: 0.1 }}
-              className="font-semibold text-[#0f0f0f] leading-[1.1] tracking-tight"
-              style={{ fontSize: "clamp(32px, 5vw, 64px)", maxWidth: 700 }}
+              transition={{ duration: 0.6, ease: EASE, delay: 0.05 }}
+              className="font-semibold text-black leading-[1.1] tracking-tight"
+              style={{ fontSize: "clamp(30px, 4.5vw, 54px)", maxWidth: 720 }}
             >
               Stop{" "}
               <span style={{ color: "#4154f9" }}>Designing</span>
@@ -179,21 +171,21 @@ export default function CTABanner() {
               initial={{ opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.55, ease: EASE, delay: 0.2 }}
-              className="font-normal text-[#181818] leading-[1.5]"
-              style={{ fontSize: "clamp(15px, 2vw, 20px)", maxWidth: 580, opacity: 0.7 }}
+              transition={{ duration: 0.55, ease: EASE, delay: 0.14 }}
+              className="font-normal text-[#181818] leading-[1.4]"
+              style={{ fontSize: "clamp(15px, 1.6vw, 20px)", maxWidth: 500, opacity: 0.8 }}
             >
-              Be part of the HK Designer community, learn, grow, and connect with designers like you.
+              Be part of the HK Design community, learn, grow, and connect with designers like you.
             </motion.p>
 
             {/* CTA */}
             <motion.div
-              initial={{ opacity: 0, y: 14 }}
+              initial={{ opacity: 0, y: 12 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.5, ease: EASE, delay: 0.3 }}
+              transition={{ duration: 0.5, ease: EASE, delay: 0.22 }}
             >
-              <JoinButton />
+              <CTAButtons />
             </motion.div>
           </div>
         </motion.div>
