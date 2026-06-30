@@ -58,6 +58,18 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* ─── Eye blink ───────────────────────────────────────────────── */
+@keyframes eyeblink {
+  0%, 88%, 100% { transform: scaleY(1); }
+  93%           { transform: scaleY(0.06); }
+  96%           { transform: scaleY(1); }
+}
+
+.animate-eyeblink {
+  animation: eyeblink 3.8s ease-in-out infinite;
+  transform-origin: center;
+}
+
 /* ─── Marquee ─────────────────────────────────────────────────── */
 @keyframes marquee {
   from {
