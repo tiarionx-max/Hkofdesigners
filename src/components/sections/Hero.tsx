@@ -123,10 +123,10 @@ export default function Hero() {
         }}
       />
 
-      {/* ── Floating decorative layer (desktop only) ─────────────────── */}
+      {/* ── Floating decorative layer — avatars, lines & Figma icon scale down on mobile ── */}
       <motion.div
-        className="pointer-events-none absolute inset-0 hidden lg:block"
-        style={{ y: layerY, opacity: layerOpacity }}
+        className="pointer-events-none absolute inset-0 scale-[0.46] sm:scale-[0.62] md:scale-[0.8] lg:scale-100"
+        style={{ y: layerY, opacity: layerOpacity, transformOrigin: "50% 0%" }}
         aria-hidden="true"
       >
         {/* ════════ AVATARS ════════ */}
@@ -239,62 +239,64 @@ export default function Hero() {
           <Image src={ARROW_3} alt="" fill className="object-contain" unoptimized />
         </motion.div>
 
-        {/* ════════ ICONS — float loops ════════ */}
-
-        {/* Pen tool — rotate -143.59°, scaleY(-1) */}
-        <FloatIcon src={ICON_PEN} size={33} delay={0.7} floatAmp={5} floatDur={4.4}
-          style={{ left: px(211.98), top: py(379.89), rotate: "-143.59deg", transform: "scaleY(-1)" }} />
-
-        {/* Web/Figma icon — rotate -159.14°, scaleY(-1), opacity 50% */}
+        {/* Web/Figma icon — visible on all breakpoints, rotate -159.14°, scaleY(-1), opacity 50% */}
         <FloatIcon src={ICON_WEB} size={24} delay={0.75} floatAmp={5} floatDur={3.9} opacity={0.5}
           style={{ left: px(460.03), top: py(572.05), rotate: "-159.14deg", transform: "scaleY(-1)" }} />
 
-        {/* PS icon — rotate -13.46° */}
-        <FloatIcon src={ICON_PS} size={29} delay={0.72} floatAmp={6} floatDur={4.1}
-          style={{ left: px(486), top: py(666), rotate: "-13.46deg" }} />
+        {/* ════════ Remaining tool icons — desktop only ════════ */}
+        <div className="hidden lg:block">
 
-        {/* AE icon — rotate -13.46° */}
-        <FloatIcon src={ICON_AE} size={28} delay={0.76} floatAmp={6} floatDur={3.7}
-          style={{ left: px(852.83), top: py(542.43), rotate: "-13.46deg" }} />
+          {/* Pen tool — rotate -143.59°, scaleY(-1) */}
+          <FloatIcon src={ICON_PEN} size={33} delay={0.7} floatAmp={5} floatDur={4.4}
+            style={{ left: px(211.98), top: py(379.89), rotate: "-143.59deg", transform: "scaleY(-1)" }} />
 
-        {/* Chat icon 1 — rotate -13.46° */}
-        <FloatIcon src={ICON_CHAT} size={28} delay={0.77} floatAmp={5} floatDur={4.3}
-          style={{ left: px(1027.22), top: py(589.83), rotate: "-13.46deg" }} />
+          {/* PS icon — rotate -13.46° */}
+          <FloatIcon src={ICON_PS} size={29} delay={0.72} floatAmp={6} floatDur={4.1}
+            style={{ left: px(486), top: py(666), rotate: "-13.46deg" }} />
 
-        {/* Design mug — rotate -13.46°, opacity 70% */}
-        <FloatIcon src={ICON_MUG} size={28} delay={0.68} floatAmp={7} floatDur={4.8} opacity={0.7}
-          style={{ left: px(1043.31), top: py(263.91), rotate: "-13.46deg" }} />
+          {/* AE icon — rotate -13.46° */}
+          <FloatIcon src={ICON_AE} size={28} delay={0.76} floatAmp={6} floatDur={3.7}
+            style={{ left: px(852.83), top: py(542.43), rotate: "-13.46deg" }} />
 
-        {/* Chat icon 2 — rotate -13.46°, right=91.97px */}
-        <FloatIcon src={ICON_CHAT2} size={28} delay={0.79} floatAmp={6} floatDur={4.0}
-          style={{ right: px(91.97), top: `calc(50% - 29px)`, rotate: "-13.46deg" }} />
+          {/* Chat icon 1 — rotate -13.46° */}
+          <FloatIcon src={ICON_CHAT} size={28} delay={0.77} floatAmp={5} floatDur={4.3}
+            style={{ left: px(1027.22), top: py(589.83), rotate: "-13.46deg" }} />
 
-        {/* Motion play — rotate -13.46° */}
-        <FloatIcon src={ICON_MOTION} size={28} delay={0.78} floatAmp={5} floatDur={4.5}
-          style={{ left: px(904.47), top: py(647.4), rotate: "-13.46deg" }} />
+          {/* Design mug — rotate -13.46°, opacity 70% */}
+          <FloatIcon src={ICON_MUG} size={28} delay={0.68} floatAmp={7} floatDur={4.8} opacity={0.7}
+            style={{ left: px(1043.31), top: py(263.91), rotate: "-13.46deg" }} />
 
-        {/* Small photo thumbnail — rotate -18°, rounded */}
-        <motion.div
-          className="absolute overflow-hidden rounded-[4px]"
-          style={{ left: px(1038.23), top: py(371.42), width: 23.7, height: 23.7, rotate: "-18deg" }}
-          initial={{ opacity: 0, scale: 0.6 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5, ease: EASE, delay: 0.73 }}
-        >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={IMG_THUMB}
-            alt=""
-            style={{
-              position: "absolute",
-              width: "197.67%",
-              height: "123.26%",
-              left: "-48.84%",
-              top: "-11.63%",
-              objectFit: "cover",
-            }}
-          />
-        </motion.div>
+          {/* Chat icon 2 — rotate -13.46°, right=91.97px */}
+          <FloatIcon src={ICON_CHAT2} size={28} delay={0.79} floatAmp={6} floatDur={4.0}
+            style={{ right: px(91.97), top: `calc(50% - 29px)`, rotate: "-13.46deg" }} />
+
+          {/* Motion play — rotate -13.46° */}
+          <FloatIcon src={ICON_MOTION} size={28} delay={0.78} floatAmp={5} floatDur={4.5}
+            style={{ left: px(904.47), top: py(647.4), rotate: "-13.46deg" }} />
+
+          {/* Small photo thumbnail — rotate -18°, rounded */}
+          <motion.div
+            className="absolute overflow-hidden rounded-[4px]"
+            style={{ left: px(1038.23), top: py(371.42), width: 23.7, height: 23.7, rotate: "-18deg" }}
+            initial={{ opacity: 0, scale: 0.6 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5, ease: EASE, delay: 0.73 }}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={IMG_THUMB}
+              alt=""
+              style={{
+                position: "absolute",
+                width: "197.67%",
+                height: "123.26%",
+                left: "-48.84%",
+                top: "-11.63%",
+                objectFit: "cover",
+              }}
+            />
+          </motion.div>
+        </div>
       </motion.div>
 
       {/* ── Main content ───────────────────────────────────────────── */}
