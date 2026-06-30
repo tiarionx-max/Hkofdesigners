@@ -5,12 +5,12 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 
 // ── Figma assets ─────────────────────────────────────────────────────────────
-const HK_SHAPES   = "https://www.figma.com/api/mcp/asset/d8a7ee3d-9902-4479-89a4-a271b5762ad7";
-const HK_TEXT     = "https://www.figma.com/api/mcp/asset/e5925246-f34f-4c43-aef9-139ece0d13e2";
-const GLOW_1      = "https://www.figma.com/api/mcp/asset/9e14ed79-873e-42f1-b1b1-c5d3a7f4e1f8";
-const GLOW_2      = "https://www.figma.com/api/mcp/asset/8104eea3-fffe-4301-9a79-9effda975c08";
-const GLOW_3      = "https://www.figma.com/api/mcp/asset/e19d11b8-9d86-46c6-9af2-83a3b0998b75";
-const GLOW_4      = "https://www.figma.com/api/mcp/asset/094fc551-0bf8-45cc-af16-37cdc3ea7e98";
+const HK_SHAPES   = "https://www.figma.com/api/mcp/asset/835013ef-bc3b-476d-9171-fffc7127d647";
+const HK_TEXT     = "https://www.figma.com/api/mcp/asset/39e22013-c307-4d48-8fa4-35a9d0a06606";
+const GLOW_1      = "https://www.figma.com/api/mcp/asset/4f6798d7-69d6-4260-bdb5-e9bc4860a1a4";
+const GLOW_2      = "https://www.figma.com/api/mcp/asset/600ae240-2721-4bef-bda6-6cff0d3e1b96";
+const GLOW_3      = "https://www.figma.com/api/mcp/asset/ba641499-cf7a-4878-abf8-928b4a2420f0";
+const GLOW_4      = "https://www.figma.com/api/mcp/asset/e4182340-0bfc-4ff9-a927-5da7e4961030";
 
 // ── Data ──────────────────────────────────────────────────────────────────────
 const NAV_LINKS = [
@@ -21,45 +21,44 @@ const NAV_LINKS = [
   { label: "Join Us",   href: "#" },
 ];
 
-const WORDS = ["Every", "Motion", "UI/UX", "Branding", "3D", "Product", "Illustration"];
+const WORDS = [
+  { word: "Every",        color: "#ff3b30" },
+  { word: "Motion",       color: "#ffb522" },
+  { word: "UI/UX",        color: "#af52de" },
+  { word: "Branding",     color: "#4154f9" },
+  { word: "3D",           color: "#FF3D3D" },
+  { word: "Product",      color: "#00D084" },
+  { word: "Illustration", color: "#ffb522" },
+];
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
-// ── CyclingWord ───────────────────────────────────────────────────────────────
+// ── CyclingWord — same blur+fade+y animation as the hero ─────────────────────
 function CyclingWord() {
   const [index, setIndex] = useState(0);
 
   useEffect(() => {
     const id = setInterval(() => {
       setIndex(i => (i + 1) % WORDS.length);
-    }, 2200);
+    }, 2800);
     return () => clearInterval(id);
   }, []);
 
-  return (
-    <span
-      className="relative inline-block align-baseline overflow-hidden"
-      style={{ minWidth: "5ch" }}
-      aria-live="polite"
-      aria-atomic="true"
-    >
-      {/* Height anchor — keeps layout stable */}
-      <span className="invisible select-none" aria-hidden>Every</span>
+  const { word, color } = WORDS[index];
 
-      <AnimatePresence mode="popLayout" initial={false}>
-        <motion.span
-          key={WORDS[index]}
-          initial={{ y: "110%", opacity: 0 }}
-          animate={{ y: "0%",   opacity: 1 }}
-          exit={{    y: "-110%", opacity: 0 }}
-          transition={{ duration: 0.52, ease: EASE }}
-          className="absolute inset-0 flex items-center"
-          style={{ color: "#ffb522" }}
-        >
-          {WORDS[index]}
-        </motion.span>
-      </AnimatePresence>
-    </span>
+  return (
+    <AnimatePresence mode="wait">
+      <motion.span
+        key={word}
+        style={{ color, display: "inline-block" }}
+        initial={{ opacity: 0, y: 12,  filter: "blur(5px)" }}
+        animate={{ opacity: 1, y: 0,   filter: "blur(0px)" }}
+        exit={{    opacity: 0, y: -12, filter: "blur(5px)" }}
+        transition={{ duration: 0.32, ease: EASE }}
+      >
+        {word}
+      </motion.span>
+    </AnimatePresence>
   );
 }
 
