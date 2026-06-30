@@ -1,6 +1,7 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { useRef } from "react";
+import { motion, useSpring, useTransform, useMotionValue } from "framer-motion";
 import Image from "next/image";
 
 const STAR = "https://www.figma.com/api/mcp/asset/ca49fd01-3483-45ef-a4da-a5068b3dec9e";
@@ -44,28 +45,103 @@ const TESTIMONIALS = [
 ];
 
 const EASE = [0.22, 1, 0.36, 1] as const;
+const SPRING = { stiffness: 260, damping: 28, mass: 0.5 };
 
-function Stars() {
+function Stars({ delay = 0 }: { delay?: number }) {
   return (
-    <div className="flex items-center">
+    <div className="flex items-center gap-0.5">
       {Array.from({ length: 5 }).map((_, i) => (
-        <div key={i} className="relative w-4 h-4 flex-none">
+        <motion.div
+          key={i}
+          initial={{ opacity: 0, scale: 0.4, rotate: -20 }}
+          whileInView={{ opacity: 1, scale: 1, rotate: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.35, ease: EASE, delay: delay + i * 0.06 }}
+          className="relative w-4 h-4 flex-none"
+        >
           <img src={STAR} alt="" aria-hidden className="absolute inset-0 w-full h-full" />
-        </div>
+        </motion.div>
       ))}
     </div>
   );
 }
 
-function TestimonialCard({ t }: { t: typeof TESTIMONIALS[0] }) {
-  return (
-    <article
-      className="bg-[#ffb522] rounded-[15px] overflow-hidden p-5 flex flex-col gap-4 relative"
-      style={{ boxShadow: "7px 6px 0px 0px #fffbe8" }}
-    >
-      <Stars />
+function TestimonialCard({
+  t,
+  starsDelay = 0,
+  isFeatured = false,
+}: {
+  t: typeof TESTIMONIALS[0];
+  starsDelay?: number;
+  isFeatured?: number | boolean;
+}) {
+  const cardRef = useRef<HTMLDivElement>(null);
 
-      <blockquote className="text-[14px] font-normal text-black leading-[1.2] flex-1">
+  // Mouse-tracking tilt
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+  const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [isFeatured ? 5 : 7, isFeatured ? -5 : -7]), SPRING);
+  const rotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], [isFeatured ? -7 : -10, isFeatured ? 7 : 10]), SPRING);
+
+  // Shadow shifts with tilt
+  const shadowX = useSpring(useTransform(mouseX, [-0.5, 0.5], [14, 2]), SPRING);
+  const shadowY = useSpring(useTransform(mouseY, [-0.5, 0.5], [2, 12]), SPRING);
+
+  // Spotlight position
+  const spotX = useMotionValue(50);
+  const spotY = useMotionValue(50);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = cardRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    const nx = (e.clientX - rect.left) / rect.width;
+    const ny = (e.clientY - rect.top) / rect.height;
+    mouseX.set(nx - 0.5);
+    mouseY.set(ny - 0.5);
+    spotX.set(nx * 100);
+    spotY.set(ny * 100);
+  };
+
+  const handleMouseLeave = () => {
+    mouseX.set(0);
+    mouseY.set(0);
+    spotX.set(50);
+    spotY.set(50);
+  };
+
+  return (
+    <motion.div
+      ref={cardRef}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      whileHover={{ y: -6, scale: isFeatured ? 1.018 : 1.013 }}
+      transition={{ duration: 0.3, ease: EASE }}
+      style={{
+        rotateX,
+        rotateY,
+        transformPerspective: 1000,
+        boxShadow: useTransform(
+          [shadowX, shadowY],
+          ([sx, sy]: number[]) => `${sx}px ${sy}px 0px 0px #fffbe8`
+        ),
+      }}
+      className="relative bg-[#ffb522] rounded-[15px] overflow-hidden p-5 flex flex-col gap-4 cursor-default will-change-transform"
+    >
+      {/* Cursor spotlight */}
+      <motion.div
+        className="absolute inset-0 pointer-events-none rounded-[15px] z-10"
+        style={{
+          background: useTransform(
+            [spotX, spotY],
+            ([sx, sy]: number[]) =>
+              `radial-gradient(circle 140px at ${sx}% ${sy}%, rgba(255,255,255,0.18) 0%, transparent 70%)`
+          ),
+        }}
+      />
+
+      <Stars delay={starsDelay} />
+
+      <blockquote className="text-[14px] font-normal text-black leading-[1.2] flex-1 relative z-20">
         {t.quote.split("\n").map((para, i) =>
           para.trim() ? (
             <p key={i} className={i > 0 ? "mt-3" : ""}>
@@ -75,7 +151,7 @@ function TestimonialCard({ t }: { t: typeof TESTIMONIALS[0] }) {
         )}
       </blockquote>
 
-      <footer className="flex items-center gap-2">
+      <footer className="flex items-center gap-2 relative z-20">
         <div className="w-8 h-8 rounded-full overflow-hidden bg-white flex-none">
           <Image
             src={t.avatar}
@@ -91,27 +167,22 @@ function TestimonialCard({ t }: { t: typeof TESTIMONIALS[0] }) {
           <span className="text-[10px] text-[rgba(24,24,24,0.6)]">{t.date}</span>
         </div>
       </footer>
-    </article>
+    </motion.div>
   );
 }
 
-const COLS = [
-  { cards: [0, 1], initial: { opacity: 0, x: -72 } },
-  { cards: [2],    initial: { opacity: 0, y: 72 } },
-  { cards: [3, 4], initial: { opacity: 0, x: 72 } },
-];
-
 export default function Testimonials() {
   return (
-    <section className="bg-[#0f0f0f] py-20 md:py-28 border-t border-[rgba(255,255,255,0.06)]">
+    <section className="bg-[#0f0f0f] py-20 md:py-28 border-t border-[rgba(255,255,255,0.06)] overflow-hidden">
       <div className="max-w-[1200px] mx-auto px-5 lg:px-8">
-        {/* Heading */}
+
+        {/* Heading — scales up + fades */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0, y: 24, scale: 0.97 }}
+          whileInView={{ opacity: 1, y: 0, scale: 1 }}
           viewport={{ once: true, margin: "-60px" }}
-          transition={{ duration: 0.52, ease: EASE }}
-          className="flex flex-col items-center text-center gap-3 mb-12"
+          transition={{ duration: 0.6, ease: EASE }}
+          className="flex flex-col items-center text-center gap-3 mb-14"
         >
           <h2
             className="font-semibold text-[#fffbe8] leading-[1.1]"
@@ -128,35 +199,56 @@ export default function Testimonials() {
           </p>
         </motion.div>
 
-        {/* Desktop 3-col masonry with directional slide-in */}
-        <div className="hidden md:grid grid-cols-3 gap-5 items-start">
-          {COLS.map((col, colIdx) => (
-            <motion.div
-              key={colIdx}
-              initial={col.initial}
-              whileInView={{ opacity: 1, x: 0, y: 0 }}
-              viewport={{ once: true, margin: "-80px" }}
-              transition={{ duration: 0.65, ease: EASE, delay: colIdx * 0.08 }}
-              className="flex flex-col gap-5"
-            >
-              {col.cards.map((idx) => (
-                <TestimonialCard key={TESTIMONIALS[idx].id} t={TESTIMONIALS[idx]} />
-              ))}
-            </motion.div>
-          ))}
+        {/* Desktop 3-col layout */}
+        <div className="hidden md:flex gap-5 items-start">
+
+          {/* Left column — slides in from left */}
+          <motion.div
+            initial={{ opacity: 0, x: -80 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.7, ease: EASE }}
+            className="flex flex-col gap-5 flex-1"
+          >
+            <TestimonialCard t={TESTIMONIALS[0]} starsDelay={0.3} />
+            <TestimonialCard t={TESTIMONIALS[1]} starsDelay={0.35} />
+          </motion.div>
+
+          {/* Center column — rises from below, delayed to feel focal */}
+          <motion.div
+            initial={{ opacity: 0, y: 80, scale: 0.97 }}
+            whileInView={{ opacity: 1, y: 0, scale: 1 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.75, ease: EASE, delay: 0.1 }}
+            className="flex flex-col gap-5 flex-1"
+          >
+            <TestimonialCard t={TESTIMONIALS[2]} starsDelay={0.4} isFeatured />
+          </motion.div>
+
+          {/* Right column — slides in from right */}
+          <motion.div
+            initial={{ opacity: 0, x: 80 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.7, ease: EASE, delay: 0.05 }}
+            className="flex flex-col gap-5 flex-1"
+          >
+            <TestimonialCard t={TESTIMONIALS[3]} starsDelay={0.3} />
+            <TestimonialCard t={TESTIMONIALS[4]} starsDelay={0.35} />
+          </motion.div>
         </div>
 
-        {/* Mobile single column — each card fades up */}
+        {/* Mobile — staggered fade-up per card */}
         <div className="md:hidden flex flex-col gap-5">
           {TESTIMONIALS.map((t, i) => (
             <motion.div
               key={t.id}
-              initial={{ opacity: 0, y: 28 }}
+              initial={{ opacity: 0, y: 32 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-40px" }}
               transition={{ duration: 0.55, ease: EASE, delay: i * 0.07 }}
             >
-              <TestimonialCard t={t} />
+              <TestimonialCard t={t} starsDelay={i * 0.07} />
             </motion.div>
           ))}
         </div>
