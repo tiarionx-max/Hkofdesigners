@@ -3,6 +3,13 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
+// Animation background images exported from Figma (valid ~7 days; replace with hosted assets)
+const ANIM_IMGS = [
+  "https://www.figma.com/api/mcp/asset/f6c2da5f-7692-4421-8e17-507d044a7c92",
+  "https://www.figma.com/api/mcp/asset/e8d5be38-91d3-49c4-9068-2e410c15e9cb",
+  "https://www.figma.com/api/mcp/asset/9a498c86-7d2b-437a-9073-720a7904476f",
+];
+
 const CARDS = [
   {
     id: 1,
@@ -87,21 +94,24 @@ export default function WhyJoin() {
                 }}
                 onMouseEnter={() => setHovered(card.id)}
               >
-                {/* Animation background area */}
+                {/* Animation background image */}
                 <motion.div
                   className="absolute pointer-events-none"
                   animate={{
-                    width: isActive ? 797 : 424,
-                    height: isActive ? 652 : 534,
-                    opacity: isActive ? 0.9 : 0.4,
+                    width: isActive ? 797 : 437,
+                    height: isActive ? 797 : 534,
+                    opacity: isActive ? 0.9 : 0.5,
                   }}
                   transition={{ duration: 0.5, ease: EASE }}
-                  style={{
-                    left: -7.58,
-                    top: 0,
-                    background: `radial-gradient(ellipse 60% 50% at 40% 60%, ${card.subtextColor}22 0%, transparent 70%)`,
-                  }}
-                />
+                  style={{ left: -7.58, top: isActive ? -132.57 : -1 }}
+                >
+                  <img
+                    src={ANIM_IMGS[i]}
+                    alt=""
+                    aria-hidden
+                    className="w-full h-full object-cover"
+                  />
+                </motion.div>
 
                 {/* Top fade mask */}
                 <motion.div
