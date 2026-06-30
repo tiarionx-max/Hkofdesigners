@@ -3,11 +3,10 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-// Animation background images exported from Figma (valid ~7 days; replace with hosted assets)
-const ANIM_IMGS = [
-  "https://www.figma.com/api/mcp/asset/f6c2da5f-7692-4421-8e17-507d044a7c92",
-  "https://www.figma.com/api/mcp/asset/e8d5be38-91d3-49c4-9068-2e410c15e9cb",
-  "https://www.figma.com/api/mcp/asset/9a498c86-7d2b-437a-9073-720a7904476f",
+const ANIM_VIDEOS = [
+  "/why-join/card-1.mp4",
+  "/why-join/card-2.mp4",
+  "/why-join/card-3.mp4",
 ];
 
 const CARDS = [
@@ -94,20 +93,24 @@ export default function WhyJoin() {
                 }}
                 onMouseEnter={() => setHovered(card.id)}
               >
-                {/* Animation background image */}
+                {/* Animation background video */}
                 <motion.div
                   className="absolute pointer-events-none"
                   animate={{
                     width: isActive ? 797 : 437,
                     height: isActive ? 797 : 534,
                     opacity: isActive ? 0.9 : 0.5,
+                    top: isActive ? -132.57 : -1,
                   }}
                   transition={{ duration: 0.5, ease: EASE }}
-                  style={{ left: -7.58, top: isActive ? -132.57 : -1 }}
+                  style={{ left: -7.58 }}
                 >
-                  <img
-                    src={ANIM_IMGS[i]}
-                    alt=""
+                  <video
+                    src={ANIM_VIDEOS[i]}
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
                     aria-hidden
                     className="w-full h-full object-cover"
                   />
