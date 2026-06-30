@@ -2,6 +2,7 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import Hero from "@/components/sections/Hero";
 import Features from "@/components/sections/Features";
+import Showcase from "@/components/sections/Showcase";
 import Gallery from "@/components/sections/Gallery";
 import StayInspired from "@/components/sections/StayInspired";
 import WhyJoin from "@/components/sections/WhyJoin";
@@ -16,6 +17,7 @@ export default function HomePage() {
       <main>
         <Hero />
         <Features />
+        <Showcase />
         <Gallery />
         <StayInspired />
         <WhyJoin />
