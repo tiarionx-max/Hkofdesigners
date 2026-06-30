@@ -255,13 +255,11 @@ export default function Hero() {
         {/* Small photo thumbnail — rotate -18°, rounded, 24 × 24 */}
         <FadeIn delay={0.73} className="absolute overflow-hidden rounded-[4px]"
           style={{ left: px(1038.23), top: py(371.42), width: 23.7, height: 23.7, rotate: "-18deg" }}>
-          <Image
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
             src={IMG_THUMB}
             alt=""
-            fill
-            className="object-cover"
-            style={{ width: "197.67%", height: "123.26%", left: "-48.84%", top: "-11.63%", position: "absolute" }}
-            unoptimized
+            style={{ position: "absolute", width: "197.67%", height: "123.26%", left: "-48.84%", top: "-11.63%", objectFit: "cover" }}
           />
         </FadeIn>
       </motion.div>
