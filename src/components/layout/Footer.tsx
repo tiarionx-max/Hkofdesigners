@@ -111,7 +111,14 @@ function HKMark({ size }: { size: number }) {
 const LOGO_IMAGE = "/hk-mark.png";
 
 function LogoMark() {
-  const [useImage, setUseImage] = useState(true);
+  const [useImage, setUseImage] = useState(false);
+
+  useEffect(() => {
+    fetch(LOGO_IMAGE, { method: "HEAD" }).then(r => {
+      if (r.ok) setUseImage(true);
+    }).catch(() => {});
+  }, []);
+
   if (useImage) {
     return (
       <div style={{ width: "100%", aspectRatio: "1 / 1" }}>
