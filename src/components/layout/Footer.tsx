@@ -4,13 +4,6 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 
-// ── Figma assets ─────────────────────────────────────────────────────────────
-const HK_SHAPES   = "https://www.figma.com/api/mcp/asset/835013ef-bc3b-476d-9171-fffc7127d647";
-const HK_TEXT     = "https://www.figma.com/api/mcp/asset/39e22013-c307-4d48-8fa4-35a9d0a06606";
-const GLOW_1      = "https://www.figma.com/api/mcp/asset/4f6798d7-69d6-4260-bdb5-e9bc4860a1a4";
-const GLOW_2      = "https://www.figma.com/api/mcp/asset/600ae240-2721-4bef-bda6-6cff0d3e1b96";
-const GLOW_3      = "https://www.figma.com/api/mcp/asset/ba641499-cf7a-4878-abf8-928b4a2420f0";
-const GLOW_4      = "https://www.figma.com/api/mcp/asset/e4182340-0bfc-4ff9-a927-5da7e4961030";
 
 // ── Data ──────────────────────────────────────────────────────────────────────
 const NAV_LINKS = [
@@ -130,37 +123,37 @@ export default function Footer() {
         <div className="border-t border-[rgba(255,255,255,0.08)]" />
 
         {/* ── Hero logo area ──────────────────────────────────────────────── */}
-        <div className="relative py-10 md:py-12">
-          {/* Glow blobs — bottom of hero */}
-          <div className="absolute bottom-0 left-1/2 -translate-x-1/2 flex pointer-events-none select-none" style={{ gap: 0, zIndex: 0 }}>
-            {[GLOW_2, GLOW_1, GLOW_3, GLOW_4].map((src, i) => (
-              <img
-                key={i}
-                src={src}
-                alt=""
-                aria-hidden
-                className="w-[200px] md:w-[280px] lg:w-[340px] opacity-80"
-                style={{ marginLeft: i > 0 ? -60 : 0 }}
-              />
-            ))}
+        <div className="relative py-10 md:py-14 flex items-center justify-center gap-[clamp(16px,3vw,52px)]">
+
+          {/* Geometric mark — 2×2 grid of CSS shapes */}
+          <div className="grid grid-cols-2 gap-[clamp(4px,0.6vw,8px)] flex-none self-center" aria-hidden>
+            {/* Red square */}
+            <div className="rounded-[clamp(4px,0.5vw,7px)]"
+              style={{ width: "clamp(28px,4.5vw,60px)", height: "clamp(28px,4.5vw,60px)", background: "#FF3D3D" }} />
+            {/* Purple circle */}
+            <div className="rounded-full border-[clamp(3px,0.5vw,6px)]"
+              style={{ width: "clamp(28px,4.5vw,60px)", height: "clamp(28px,4.5vw,60px)", borderColor: "#8B5CF6" }} />
+            {/* Blue arch */}
+            <div className="rounded-t-full"
+              style={{ width: "clamp(28px,4.5vw,60px)", height: "clamp(14px,2.25vw,30px)", marginTop: "clamp(14px,2.25vw,30px)", background: "#4169FF" }} />
+            {/* Gold triangle */}
+            <div className="flex items-end justify-center">
+              <div style={{
+                width: 0, height: 0,
+                borderLeft:   "clamp(14px,2.25vw,30px) solid transparent",
+                borderRight:  "clamp(14px,2.25vw,30px) solid transparent",
+                borderBottom: "clamp(24px,3.9vw,52px) solid #ffb522",
+              }} />
+            </div>
           </div>
 
-          {/* Logo: shapes + wordmark */}
-          <div
-            className="relative z-10 flex items-center justify-center gap-[3%]"
+          {/* Wordmark — clean text, no image dependency */}
+          <h2
+            className="font-semibold text-[#fffbe8] leading-[0.92] tracking-tight select-none"
+            style={{ fontSize: "clamp(52px,9.5vw,122px)" }}
           >
-            <img
-              src={HK_SHAPES}
-              alt=""
-              aria-hidden
-              className="w-[18%] max-w-[220px] min-w-[80px] object-contain"
-            />
-            <img
-              src={HK_TEXT}
-              alt="HK of Designers"
-              className="w-[56%] max-w-[760px] min-w-[200px] object-contain"
-            />
-          </div>
+            HK of<br />Designers
+          </h2>
         </div>
 
         {/* Horizontal rule above bottom bar */}
