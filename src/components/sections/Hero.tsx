@@ -356,7 +356,7 @@ export default function Hero() {
 
         {/* Headline */}
         <motion.h1
-          className="font-semibold text-[#fffbe8] max-w-[730px] text-[44px] sm:text-[52px] md:text-[60px] xl:text-[73px]"
+          className="font-semibold text-[#fffbe8] w-full max-w-[730px] text-[44px] sm:text-[52px] md:text-[60px] xl:text-[73px]"
           style={{
             lineHeight: 1.05,
             letterSpacing: "-0.02em",
@@ -390,7 +390,7 @@ export default function Hero() {
 
         {/* Sub-copy */}
         <motion.p
-          className="text-[rgba(255,255,255,0.7)] max-w-[730px] text-[16px] sm:text-[18px] md:text-[20px] xl:text-[24.33px]"
+          className="text-[rgba(255,255,255,0.7)] w-full max-w-[730px] text-[16px] sm:text-[18px] md:text-[20px] xl:text-[24.33px]"
           style={{ lineHeight: 1.3, marginTop: 14.6 }}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
