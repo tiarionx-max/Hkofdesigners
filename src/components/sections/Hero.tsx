@@ -4,39 +4,41 @@ import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
 
-/* ─── Asset URLs — Figma node 18:829 ─────────────────────────────────── */
+/* ─── Asset URLs — Figma node 18:829 (refreshed) ─────────────────────── */
 const BG_GRID     = "https://www.figma.com/api/mcp/asset/d0135fdd-2abd-4fa1-a58b-2d3415920c64";
 // Avatars
-const A_LEFT      = "https://www.figma.com/api/mcp/asset/5fd59771-0c40-4136-8731-9d524190fcee";
-const A_BLUE      = "https://www.figma.com/api/mcp/asset/84644c53-fafc-41c1-b1c6-4be09a559ce8";
-const A_PURPLE    = "https://www.figma.com/api/mcp/asset/2b98a0f5-7eec-4d85-af57-fa1d4e2a5eeb";
-const A_YELLOW    = "https://www.figma.com/api/mcp/asset/a16e168e-3f06-478d-ab1e-ce05a23e1411";
+const A_LEFT      = "https://www.figma.com/api/mcp/asset/1e6d4afc-5478-4dfe-8e94-f16dd31c880c";
+const A_BLUE      = "https://www.figma.com/api/mcp/asset/98835399-2e0c-4133-9ccc-1a161a66320c";
+const A_PURPLE    = "https://www.figma.com/api/mcp/asset/7fda68da-2c6a-47b3-a681-e697da89620c";
+const A_YELLOW    = "https://www.figma.com/api/mcp/asset/cae77b8a-556e-4a04-9780-cb8eecfd93ea";
 // Lines & spirals
-const WAVY        = "https://www.figma.com/api/mcp/asset/fdb44a11-d2d7-47a5-8885-3d0aae684a9e";
-const SPIRAL_L    = "https://www.figma.com/api/mcp/asset/7f94120d-7e81-441d-aa73-4391147665cf";
-const SPIRAL_R    = "https://www.figma.com/api/mcp/asset/a0c18593-aa99-4a4a-822b-8fad781ddc8c";
-const DOODLE_L    = "https://www.figma.com/api/mcp/asset/b5bdea44-bd2c-4844-9fa0-7c3762320c21";
-const DOODLE_R    = "https://www.figma.com/api/mcp/asset/1dee967b-1d3b-4ab1-a86a-cd82fedffadb";
-const ARROW_1     = "https://www.figma.com/api/mcp/asset/cce04fbf-e589-4610-9dd2-660df9d7e394";
-const ARROW_2     = "https://www.figma.com/api/mcp/asset/597d339f-b6fd-445f-b9ac-97aa456a0fdc";
-const ARROW_3     = "https://www.figma.com/api/mcp/asset/f63db776-de65-4f5f-b877-a48ef8ee6719";
+const WAVY        = "https://www.figma.com/api/mcp/asset/a91bb75e-20da-43f4-8419-630c9369e834";
+const SPIRAL_L    = "https://www.figma.com/api/mcp/asset/c470410a-e503-4cab-aa1e-b2df6378f2d5";
+const SPIRAL_R    = "https://www.figma.com/api/mcp/asset/abc35289-b4c7-4ca4-94fa-07ec516344b7";
+const DOODLE_L    = "https://www.figma.com/api/mcp/asset/1b18bd3c-142c-4d31-9346-6f0cb6d9000a";
+const DOODLE_R    = "https://www.figma.com/api/mcp/asset/a5a68745-72f4-4890-b715-5f2cbaf35637";
+const ARROW_1     = "https://www.figma.com/api/mcp/asset/87d70c98-77fd-4b39-be35-d946bc4f8cef";
+const ARROW_2     = "https://www.figma.com/api/mcp/asset/5c2301b6-3d04-4d03-907a-c55e6cd4fb60";
+const ARROW_3     = "https://www.figma.com/api/mcp/asset/108cf786-4798-4f0c-a9aa-2e68710fe745";
 // Icons
-const ICON_WEB    = "https://www.figma.com/api/mcp/asset/56b87387-c4ab-4efc-abb7-eefc2505ca1e";
-const ICON_AE     = "https://www.figma.com/api/mcp/asset/fbab4b13-10a2-439e-8865-6ed3c9240001";
-const ICON_CHAT   = "https://www.figma.com/api/mcp/asset/3e5fac94-e9c7-4e29-b8e6-240dcc8959b7";
-const ICON_MUG    = "https://www.figma.com/api/mcp/asset/83f29cbd-6000-4710-a3af-b746e8475754";
-const ICON_CHAT2  = "https://www.figma.com/api/mcp/asset/f59539cf-fe33-4d98-8610-13b15486b1f8";
-const ICON_MOTION = "https://www.figma.com/api/mcp/asset/6daeafe9-fd15-400f-b839-97d6902e9727";
-const ICON_PS     = "https://www.figma.com/api/mcp/asset/775fd730-b96b-44b9-bba7-a0f584b95788";
-const ICON_PEN    = "https://www.figma.com/api/mcp/asset/521f5d47-f00d-445b-b611-81a88215b2e3";
-const IMG_THUMB   = "https://www.figma.com/api/mcp/asset/2f1fed85-9d5f-46ad-a769-c811dd6daf78";
+const ICON_WEB    = "https://www.figma.com/api/mcp/asset/ebfb9278-8b5c-4522-a52a-b145c122b683";
+const ICON_AE     = "https://www.figma.com/api/mcp/asset/5527797e-6515-441f-b63d-20a12bc2ba78";
+const ICON_CHAT   = "https://www.figma.com/api/mcp/asset/5557c9a5-4a74-4ce0-8fca-bf648771f9a3";
+const ICON_MUG    = "https://www.figma.com/api/mcp/asset/1e8f9a5f-32b7-4ef6-a2e0-f246b206af37";
+const ICON_CHAT2  = "https://www.figma.com/api/mcp/asset/86446d99-1049-4ec0-8648-6b931d6dd1d2";
+const ICON_MOTION = "https://www.figma.com/api/mcp/asset/70bcc5c1-f548-479a-aa0b-9fea5f39b71b";
+const ICON_PS     = "https://www.figma.com/api/mcp/asset/f1f29244-48cf-4bfa-aec8-e7cdcef88ac8";
+const ICON_PEN    = "https://www.figma.com/api/mcp/asset/2b012ebd-2bce-478e-afd8-901dd2892fec";
+const IMG_THUMB   = "https://www.figma.com/api/mcp/asset/7d801bbc-4a04-48de-bc73-2805290456e1";
+// Small red squiggle accent — near left avatar (node 83:663)
+const SQUIGGLE_RED = "https://www.figma.com/api/mcp/asset/e3417143-e784-4b88-86f3-6fcd9b7ee066";
 // Button
-const BTN_ARROW   = "https://www.figma.com/api/mcp/asset/513be3b2-5d2c-4ca0-93ad-833fe09f6b0d";
+const BTN_ARROW   = "https://www.figma.com/api/mcp/asset/5de3652c-f8ac-4f81-ba2b-0c27ef85cfd9";
 // Ticker stars
-const STAR_A      = "https://www.figma.com/api/mcp/asset/6d174dcf-d750-404a-ae0a-c7de6aa44776";
-const STAR_B      = "https://www.figma.com/api/mcp/asset/b41db2bc-3073-4248-93b8-9eadedea0fa2";
-const STAR_C      = "https://www.figma.com/api/mcp/asset/7413bdba-aee7-4324-a877-8abf0ad1c5cd";
-const STAR_D      = "https://www.figma.com/api/mcp/asset/2918c4ca-a5c0-4748-83f8-e03722aa579f";
+const STAR_A      = "https://www.figma.com/api/mcp/asset/fff78f98-9ea6-4c29-a3ee-a88474713022";
+const STAR_B      = "https://www.figma.com/api/mcp/asset/b0b82ac9-5f9d-41cb-b768-fc1ae06d6c78";
+const STAR_C      = "https://www.figma.com/api/mcp/asset/9fb7e95a-a3f3-4933-9b3b-c749aa7cbe57";
+const STAR_D      = "https://www.figma.com/api/mcp/asset/2ec005d6-be7d-42fe-bc95-20cd84411699";
 
 /* ─── Ticker — 9 items matching Figma ────────────────────────────────── */
 const TICKER: { label: string; star: string }[] = [
@@ -146,6 +148,17 @@ export default function Hero() {
         {/* Top-right — yellow border, 76 × 76 */}
         <FloatAvatar src={A_YELLOW} size={76} enterDelay={0.45} floatAmp={10} floatDur={5.0} floatDelay={0.9}
           className="absolute overflow-hidden border border-[#ffb522]" style={{ left: px(1069), top: py(298) }} />
+
+        {/* Small red squiggle accent — top-left of left avatar */}
+        <motion.div
+          className="absolute"
+          style={{ left: px(142), top: py(493), width: 23.401, height: 23.401, rotate: "-13.92deg" }}
+          initial={{ opacity: 0, scale: 0.6 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5, ease: EASE, delay: 0.5 }}
+        >
+          <Image src={SQUIGGLE_RED} alt="" fill className="object-contain" unoptimized />
+        </motion.div>
 
         {/* ════════ LINES — draw-in ════════ */}
 
