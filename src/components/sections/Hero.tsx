@@ -40,6 +40,27 @@ const STAR_B      = "https://www.figma.com/api/mcp/asset/b0b82ac9-5f9d-41cb-b768
 const STAR_C      = "https://www.figma.com/api/mcp/asset/9fb7e95a-a3f3-4933-9b3b-c749aa7cbe57";
 const STAR_D      = "https://www.figma.com/api/mcp/asset/2ec005d6-be7d-42fe-bc95-20cd84411699";
 
+/* ─── Mobile decorative cluster — Figma node 88:1164 (430px frame) ────── */
+const M_A_TOPLEFT     = "https://www.figma.com/api/mcp/asset/cae491a3-0c41-4596-9069-154ad2e11774";
+const M_A_BOTTOMLEFT  = "https://www.figma.com/api/mcp/asset/ce04eb29-3cc4-4ce6-bdd7-4103718984db";
+const M_A_TOPRIGHT    = "https://www.figma.com/api/mcp/asset/bb92f174-3e74-43f7-b0af-17c37b3a1ed2";
+const M_A_BOTTOMRIGHT = "https://www.figma.com/api/mcp/asset/430662d9-4d44-4154-a9ec-8318c45d6038";
+const M_THUMB         = "https://www.figma.com/api/mcp/asset/0f8b770b-2607-41b7-bcd3-014dccc3bea8";
+const M_SQUIGGLE_RED  = "https://www.figma.com/api/mcp/asset/8c72e347-1451-4541-b45b-31cd360c56cd";
+const M_SPIRAL_1      = "https://www.figma.com/api/mcp/asset/ca45d9e2-9fb0-471f-a603-4bace7f6d9d1";
+const M_WAVY          = "https://www.figma.com/api/mcp/asset/2c2bb757-fba9-485d-a21c-8d696cc9b0f5";
+const M_SPIRAL_2      = "https://www.figma.com/api/mcp/asset/d33e9a66-d8a0-4b0e-8ad5-1e2d497121c9";
+const M_ICON_PS       = "https://www.figma.com/api/mcp/asset/7be5a815-6bb4-4c2a-8cd3-bccb3fb11bc1";
+const M_ICON_AE       = "https://www.figma.com/api/mcp/asset/7f6d524b-2351-4766-8fc9-9e85f0245623";
+const M_ICON_WEB      = "https://www.figma.com/api/mcp/asset/91ef2d0e-a0d0-4269-b0a1-f0aae0000390";
+const M_ARROW         = "https://www.figma.com/api/mcp/asset/7443c145-0190-4cd2-af78-d02dcb6b29fd";
+
+/* ─── Mobile canvas reference: 375 × 221 px (decorative cluster bbox) ─── */
+const MW = 375;
+const MH = 221;
+const mx = (v: number) => `${(v / MW) * 100}%`;
+const my = (v: number) => `${(v / MH) * 100}%`;
+
 /* ─── Ticker — 9 items matching Figma ────────────────────────────────── */
 const TICKER: { label: string; star: string }[] = [
   { label: "Motion",       star: STAR_A },
@@ -125,10 +146,10 @@ export default function Hero() {
         }}
       />
 
-      {/* ── Floating decorative layer — avatars, lines & Figma icon scale down on mobile ── */}
+      {/* ── Floating decorative layer (desktop only — mobile has its own MobileDecor cluster) ── */}
       <motion.div
-        className="pointer-events-none absolute inset-0 scale-[0.46] sm:scale-[0.62] md:scale-[0.8] lg:scale-100"
-        style={{ y: layerY, opacity: layerOpacity, transformOrigin: "50% 0%" }}
+        className="pointer-events-none absolute inset-0 hidden lg:block"
+        style={{ y: layerY, opacity: layerOpacity }}
         aria-hidden="true"
       >
         {/* ════════ AVATARS ════════ */}
@@ -252,12 +273,12 @@ export default function Hero() {
           <Image src={ARROW_3} alt="" fill className="object-contain" unoptimized />
         </motion.div>
 
-        {/* Web/Figma icon — visible on all breakpoints, rotate -159.14°, scaleY(-1), opacity 50% */}
-        <FloatIcon src={ICON_WEB} size={24} delay={0.75} floatAmp={5} floatDur={3.9} opacity={0.5}
-          style={{ left: px(460.03), top: py(572.05), rotate: "-159.14deg", transform: "scaleY(-1)" }} />
-
-        {/* ════════ Remaining tool icons — desktop only ════════ */}
+        {/* ════════ Tool icons — desktop only (mobile has its own compact cluster) ════════ */}
         <div className="hidden lg:block">
+
+          {/* Web/Figma icon — rotate -159.14°, scaleY(-1), opacity 50% */}
+          <FloatIcon src={ICON_WEB} size={24} delay={0.75} floatAmp={5} floatDur={3.9} opacity={0.5}
+            style={{ left: px(460.03), top: py(572.05), rotate: "-159.14deg", transform: "scaleY(-1)" }} />
 
           {/* Pen tool — rotate -143.59°, scaleY(-1) */}
           <FloatIcon src={ICON_PEN} size={33} delay={0.7} floatAmp={5} floatDur={4.4}
@@ -335,9 +356,8 @@ export default function Hero() {
 
         {/* Headline */}
         <motion.h1
-          className="font-semibold text-[#fffbe8] max-w-[730px]"
+          className="font-semibold text-[#fffbe8] max-w-[730px] text-[44px] sm:text-[52px] md:text-[60px] xl:text-[73px]"
           style={{
-            fontSize: "clamp(36px, 6vw, 73px)",
             lineHeight: 1.05,
             letterSpacing: "-0.02em",
           }}
@@ -370,8 +390,8 @@ export default function Hero() {
 
         {/* Sub-copy */}
         <motion.p
-          className="text-[rgba(255,255,255,0.7)] max-w-[730px]"
-          style={{ fontSize: "clamp(16px, 2vw, 24.33px)", lineHeight: 1.3, marginTop: 14.6 }}
+          className="text-[rgba(255,255,255,0.7)] max-w-[730px] text-[16px] sm:text-[18px] md:text-[20px] xl:text-[24.33px]"
+          style={{ lineHeight: 1.3, marginTop: 14.6 }}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.55, ease: EASE, delay: 0.3 }}
@@ -389,8 +409,8 @@ export default function Hero() {
         >
           <motion.a
             href="#"
-            className="inline-flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#fffbe8]/40 rounded-full"
-            style={{ filter: "drop-shadow(6.083px 6.083px 0px black)" }}
+            className="inline-flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#fffbe8]/40 rounded-full
+                       drop-shadow-[5px_5px_0px_black] md:drop-shadow-[6.083px_6.083px_0px_black]"
             whileHover={{ y: 3, filter: "drop-shadow(3px 3px 0px black)" }}
             whileTap={{ y: 4, filter: "drop-shadow(1px 1px 0px black)" }}
             transition={{ duration: 0.15, ease: EASE }}
@@ -398,60 +418,51 @@ export default function Hero() {
           >
             {/* Text pill */}
             <span
-              className="flex items-center justify-center bg-[#fffbe8] text-[#0f0f0f] font-medium leading-[1.3] whitespace-nowrap"
-              style={{
-                height: 54.75,
-                paddingInline: 29.2,
-                fontSize: 19.467,
-                borderRadius: 121.667,
-                border: "0.852px solid rgba(0,0,0,0.1)",
-              }}
+              className="flex items-center justify-center bg-[#fffbe8] text-[#0f0f0f] font-medium leading-[1.3] whitespace-nowrap
+                         h-[45px] md:h-[54.75px] px-[24px] md:px-[29.2px] text-[16px] md:text-[19.467px] rounded-[100px] md:rounded-[121.667px]"
+              style={{ border: "0.852px solid rgba(0,0,0,0.1)" }}
             >
               Join Community
             </span>
             {/* Arrow circle */}
             <span
-              className="flex items-center justify-center bg-[#fffbe8]"
-              style={{
-                width: 54.75,
-                height: 54.75,
-                borderRadius: 121.667,
-                border: "0.852px solid rgba(255,255,255,0)",
-                marginLeft: -1,
-              }}
+              className="flex items-center justify-center bg-[#fffbe8] size-[45px] md:size-[54.75px] rounded-[100px] md:rounded-[121.667px]"
+              style={{ border: "0.852px solid rgba(255,255,255,0)", marginLeft: -1 }}
             >
               {/* arrow-up-left-01 rotated 180° + scaleY(-1) = points top-right */}
               <span
-                className="relative block"
-                style={{ width: 24.333, height: 24.333, transform: "rotate(180deg) scaleY(-1)" }}
+                className="relative block size-[20px] md:size-[24.333px]"
+                style={{ transform: "rotate(180deg) scaleY(-1)" }}
               >
                 <Image src={BTN_ARROW} alt="" fill className="object-contain" unoptimized />
               </span>
             </span>
           </motion.a>
         </motion.div>
+
+        {/* ── Mobile decorative cluster (below CTA, hidden lg+) ──────── */}
+        <MobileDecor />
       </div>
 
       {/* ── Red ticker band — scrolling marquee ───────────────────── */}
       <div
         className="absolute bottom-0 left-0 right-0 pointer-events-none overflow-hidden"
-        style={{ height: 51.324, transform: "rotate(0.35deg)" }}
+        style={{ height: "clamp(31px, 4.5vw, 51.324px)", transform: "rotate(0.35deg)" }}
         aria-hidden="true"
       >
         <div
           className="flex items-center w-max animate-marquee"
-          style={{ height: 43.276, backgroundColor: "#ff3b30" }}
+          style={{ height: "clamp(28px, 4vw, 43.276px)", backgroundColor: "#ff3b30" }}
         >
           {[...TICKER, ...TICKER].map(({ label, star }, i) => (
             <span
               key={i}
-              className="inline-flex items-center gap-[6px] whitespace-nowrap"
-              style={{ paddingInline: 32 }}
+              className="inline-flex items-center gap-[4px] md:gap-[6px] whitespace-nowrap px-[16px] md:px-[32px]"
             >
-              <span className="relative inline-block shrink-0" style={{ width: 13.848, height: 13.848 }}>
+              <span className="relative inline-block shrink-0 size-[9px] md:size-[13.848px]">
                 <Image src={star} alt="" fill className="object-contain" unoptimized />
               </span>
-              <span className="text-white font-medium" style={{ fontSize: 17.31, lineHeight: 1.3 }}>
+              <span className="text-white font-medium text-[11px] md:text-[17.31px]" style={{ lineHeight: 1.3 }}>
                 {label}
               </span>
             </span>
@@ -459,6 +470,111 @@ export default function Hero() {
         </div>
       </div>
     </section>
+  );
+}
+
+/* ─── MobileDecor — compact avatar/line/icon cluster, Figma node 88:1164 ─
+   Positions are relative to the cluster's own 375×221 bounding box
+   (Figma "Group 2085663136" at x:31,y:649 within the 430px mobile frame). */
+function MobileDecor() {
+  return (
+    <div
+      className="relative w-full max-w-[380px] mx-auto lg:hidden"
+      style={{ aspectRatio: `${MW} / ${MH}`, marginTop: 40 }}
+      aria-hidden="true"
+    >
+      {/* Avatars */}
+      <FloatAvatar src={M_A_TOPLEFT} size={57} enterDelay={0.4} floatAmp={6} floatDur={4.2} floatDelay={0}
+        className="absolute overflow-hidden" style={{ left: mx(0), top: my(46) }} />
+      <FloatAvatar src={M_A_BOTTOMLEFT} size={57} enterDelay={0.48} floatAmp={6} floatDur={4.4} floatDelay={0.3}
+        className="absolute overflow-hidden border border-[#4154f9]" style={{ left: mx(97), top: my(162) }} />
+      <FloatAvatar src={M_A_TOPRIGHT} size={48} enterDelay={0.45} floatAmp={6} floatDur={3.9} floatDelay={0.6}
+        className="absolute overflow-hidden border border-[#ffb522]" style={{ left: mx(327), top: my(15) }} />
+      <FloatAvatar src={M_A_BOTTOMRIGHT} size={44} enterDelay={0.5} floatAmp={5} floatDur={4.6} floatDelay={0.9}
+        className="absolute overflow-hidden border border-[#8a38f5]" style={{ left: mx(321), top: my(172) }} />
+
+      {/* Lines & spirals */}
+      <motion.div
+        className="absolute"
+        style={{ left: mx(22), top: my(112), width: 70.231, height: 82, transformOrigin: "top center" }}
+        initial={{ scaleY: 0, opacity: 0 }}
+        animate={{ scaleY: 1, opacity: 1 }}
+        transition={{ duration: 1.0, ease: EASE, delay: 0.55 }}
+      >
+        <Image src={M_SPIRAL_1} alt="" fill className="object-contain" unoptimized />
+      </motion.div>
+      <motion.div
+        className="absolute"
+        style={{ left: mx(156), top: my(177), width: 158, height: 28.266, transformOrigin: "left center" }}
+        initial={{ scaleX: 0, opacity: 0 }}
+        animate={{ scaleX: 1, opacity: 1 }}
+        transition={{ duration: 1.2, ease: EASE, delay: 0.7 }}
+      >
+        <Image src={M_WAVY} alt="" fill className="object-contain" unoptimized />
+      </motion.div>
+      <motion.div
+        className="absolute"
+        style={{ left: mx(333), top: my(70), width: 35.553, height: 95.486, transformOrigin: "top center" }}
+        initial={{ scaleY: 0, opacity: 0 }}
+        animate={{ scaleY: 1, opacity: 1 }}
+        transition={{ duration: 1.0, ease: EASE, delay: 0.6 }}
+      >
+        <Image src={M_SPIRAL_2} alt="" fill className="object-contain" unoptimized />
+      </motion.div>
+
+      {/* Small arrow */}
+      <motion.div
+        className="absolute"
+        style={{ left: mx(221), top: my(205), width: 20.67, height: 19.868, rotate: "-13.46deg" }}
+        initial={{ opacity: 0, scale: 0 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.4, ease: "backOut", delay: 1.1 }}
+      >
+        <Image src={M_ARROW} alt="" fill className="object-contain" unoptimized />
+      </motion.div>
+
+      {/* Red squiggle accent */}
+      <motion.div
+        className="absolute"
+        style={{ left: mx(172), top: my(76), width: 23.401, height: 23.401, rotate: "-13.92deg" }}
+        initial={{ opacity: 0, scale: 0.6 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5, ease: EASE, delay: 0.5 }}
+      >
+        <Image src={M_SQUIGGLE_RED} alt="" fill className="object-contain" unoptimized />
+      </motion.div>
+
+      {/* Tool icons */}
+      <FloatIcon src={M_ICON_PS} size={22.956} delay={0.72} floatAmp={4} floatDur={4.1}
+        style={{ left: mx(72), top: my(136), rotate: "-23.94deg" }} />
+      <FloatIcon src={M_ICON_AE} size={18.451} delay={0.76} floatAmp={4} floatDur={3.7}
+        style={{ left: mx(296), top: my(0), rotate: "-13.46deg" }} />
+      <FloatIcon src={M_ICON_WEB} size={16.296} delay={0.75} floatAmp={4} floatDur={3.9} opacity={0.5}
+        style={{ left: mx(279), top: my(186), rotate: "-159.14deg", transform: "scaleY(-1)" }} />
+
+      {/* Small photo thumbnail */}
+      <motion.div
+        className="absolute overflow-hidden rounded-[2px]"
+        style={{ left: mx(326), top: my(105), width: 17.395, height: 17.395, rotate: "-32.39deg" }}
+        initial={{ opacity: 0, scale: 0.6 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5, ease: EASE, delay: 0.73 }}
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={M_THUMB}
+          alt=""
+          style={{
+            position: "absolute",
+            width: "197.67%",
+            height: "123.26%",
+            left: "-48.84%",
+            top: "-11.63%",
+            objectFit: "cover",
+          }}
+        />
+      </motion.div>
+    </div>
   );
 }
 
