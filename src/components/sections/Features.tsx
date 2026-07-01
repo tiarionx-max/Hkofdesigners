@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useCallback } from "react";
+import { useRef, useState, useCallback, useEffect } from "react";
 import { motion, useMotionValue, useSpring } from "framer-motion";
 
 // ── Assets ────────────────────────────────────────────────────────────────────
@@ -98,9 +98,32 @@ const cardV = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.55, ease: EASE } },
 };
 
+// ── Auto-scale hook — cards are hand-tuned at a fixed reference width/height;
+// this measures the actual rendered width and scales the whole card so every
+// absolutely-positioned child (text, character, eyes) stays proportional
+// instead of overflowing at narrower (tablet/mobile) widths.
+const REF_H = 282;
+function useAutoScale(refWidth: number) {
+  const outerRef = useRef<HTMLDivElement>(null);
+  const [scale, setScale] = useState(1);
+
+  useEffect(() => {
+    const el = outerRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver((entries) => {
+      const w = entries[0]?.contentRect.width;
+      if (w) setScale(w / refWidth);
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [refWidth]);
+
+  return { outerRef, scale };
+}
+
 // ── Card shell ────────────────────────────────────────────────────────────────
 function CardShell({
-  glow, children, innerRef, onMouseMove, onMouseLeave, onHoverChange,
+  glow, children, innerRef, onMouseMove, onMouseLeave, onHoverChange, refWidth,
 }: {
   glow: string;
   children: React.ReactNode;
@@ -108,23 +131,28 @@ function CardShell({
   onMouseMove: (e: React.MouseEvent<HTMLDivElement>) => void;
   onMouseLeave: () => void;
   onHoverChange?: (h: boolean) => void;
+  refWidth: number;
 }) {
+  const { outerRef, scale } = useAutoScale(refWidth);
+
   return (
-    <motion.div
-      ref={innerRef}
-      variants={cardV}
-      onMouseMove={onMouseMove}
-      onMouseLeave={() => { onMouseLeave(); onHoverChange?.(false); }}
-      onMouseEnter={() => onHoverChange?.(true)}
-      whileHover={{ boxShadow: glow }}
-      initial={{ boxShadow: NO_GLOW }}
-      transition={{ boxShadow: { duration: 0.1, ease: "easeOut" } }}
-      className="bg-[#181818] border-[0.593px] border-[rgba(255,255,255,0.1)] overflow-hidden relative rounded-[33.862px] w-full"
-      style={{ height: 282 }}
-    >
-      <img alt="" aria-hidden src={IMG.bgGrid} className="absolute inset-0 w-full h-full object-cover pointer-events-none" />
-      {children}
-    </motion.div>
+    <div ref={outerRef} className="w-full overflow-hidden rounded-[33.862px]" style={{ height: REF_H * scale }}>
+      <motion.div
+        ref={innerRef}
+        variants={cardV}
+        onMouseMove={onMouseMove}
+        onMouseLeave={() => { onMouseLeave(); onHoverChange?.(false); }}
+        onMouseEnter={() => onHoverChange?.(true)}
+        whileHover={{ boxShadow: glow }}
+        initial={{ boxShadow: NO_GLOW }}
+        transition={{ boxShadow: { duration: 0.1, ease: "easeOut" } }}
+        className="bg-[#181818] border-[0.593px] border-[rgba(255,255,255,0.1)] overflow-hidden relative rounded-[33.862px]"
+        style={{ width: refWidth, height: REF_H, transform: `scale(${scale})`, transformOrigin: "top left" }}
+      >
+        <img alt="" aria-hidden src={IMG.bgGrid} className="absolute inset-0 w-full h-full object-cover pointer-events-none" />
+        {children}
+      </motion.div>
+    </div>
   );
 }
 
@@ -144,6 +172,7 @@ function Card1() {
       innerRef={cardRef}
       onMouseMove={onMouseMove}
       onMouseLeave={onMouseLeave}
+      refWidth={656}
     >
       {/* Text */}
       <div className="absolute flex flex-col items-start"
@@ -207,6 +236,7 @@ function Card2() {
       onMouseMove={onMouseMove}
       onMouseLeave={onMouseLeave}
       onHoverChange={setHov}
+      refWidth={427}
     >
       <p className="absolute font-medium text-[#fffbe8] leading-[1.2]"
         style={{ fontSize: 27.09, left: 38.94, top: 49.10, width: 210.79, wordBreak: "break-word" }}>
@@ -227,7 +257,7 @@ function Card2() {
         <div className="absolute overflow-hidden animate-eyeblink"
           style={{ top: "44.07%", right: "77.77%", bottom: "37.23%", left: "12.84%", borderRadius: "50%" }}>
           <motion.div style={{ position: "absolute", inset: "-41.07%", x: a.x, y: a.y }}>
-            <img alt="" aria-hidden src={hov ? IMG.eyeHover1 : IMG.purplePupil1} className="block w-full h-full"
+            <img alt="" aria-hidden src={hov ? IMG.purplePupil1 : IMG.eyeDefault1} className="block w-full h-full"
               style={{ transition: "opacity 0.25s" }} />
           </motion.div>
         </div>
@@ -236,7 +266,7 @@ function Card2() {
         <div className="absolute overflow-hidden animate-eyeblink"
           style={{ top: "18.03%", right: "66.02%", bottom: "63.27%", left: "24.58%", animationDelay: "0.18s", borderRadius: "50%" }}>
           <motion.div style={{ position: "absolute", inset: "-41.07%", x: b.x, y: b.y }}>
-            <img alt="" aria-hidden src={hov ? IMG.eyeHover2 : IMG.purplePupil2} className="block w-full h-full"
+            <img alt="" aria-hidden src={hov ? IMG.purplePupil2 : IMG.eyeDefault2} className="block w-full h-full"
               style={{ transition: "opacity 0.25s" }} />
           </motion.div>
         </div>
@@ -263,6 +293,7 @@ function Card3() {
       onMouseMove={onMouseMove}
       onMouseLeave={onMouseLeave}
       onHoverChange={setHov}
+      refWidth={427}
     >
       <p className="absolute font-medium text-[#fffbe8] leading-[1.2]"
         style={{ fontSize: 27.09, left: 37.25, top: 37.25, width: 225.19, wordBreak: "break-word" }}>
@@ -352,6 +383,7 @@ function Card4() {
       onMouseMove={onMouseMove}
       onMouseLeave={onMouseLeave}
       onHoverChange={setHov}
+      refWidth={656}
     >
       {/* Text */}
       <div className="absolute flex flex-col items-start text-[#fffbe8]"
@@ -392,8 +424,8 @@ function Card4() {
             animate={{ width: eyeSize, height: eyeSize }}
             transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
           >
-            <motion.img alt="" aria-hidden src={IMG.yellowEye1} animate={{ opacity: hov ? 0 : 1 }} transition={{ duration: 0.2 }} className="absolute inset-0 w-full h-full object-cover" />
-            <motion.img alt="" aria-hidden src={IMG.yellowEye1H} animate={{ opacity: hov ? 1 : 0 }} transition={{ duration: 0.2 }} className="absolute inset-0 w-full h-full object-cover" />
+            <motion.img alt="" aria-hidden src={IMG.yellowEye1H} animate={{ opacity: hov ? 0 : 1 }} transition={{ duration: 0.2 }} className="absolute inset-0 w-full h-full object-cover" />
+            <motion.img alt="" aria-hidden src={IMG.yellowEye1} animate={{ opacity: hov ? 1 : 0 }} transition={{ duration: 0.2 }} className="absolute inset-0 w-full h-full object-cover" />
           </motion.div>
           {/* Eye 2 */}
           <motion.div
@@ -402,8 +434,8 @@ function Card4() {
             transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
             style={{ animationDelay: "0.18s" }}
           >
-            <motion.img alt="" aria-hidden src={IMG.yellowEye2} animate={{ opacity: hov ? 0 : 1 }} transition={{ duration: 0.2 }} className="absolute inset-0 w-full h-full object-cover" />
-            <motion.img alt="" aria-hidden src={IMG.yellowEye2H} animate={{ opacity: hov ? 1 : 0 }} transition={{ duration: 0.2 }} className="absolute inset-0 w-full h-full object-cover" />
+            <motion.img alt="" aria-hidden src={IMG.yellowEye2H} animate={{ opacity: hov ? 0 : 1 }} transition={{ duration: 0.2 }} className="absolute inset-0 w-full h-full object-cover" />
+            <motion.img alt="" aria-hidden src={IMG.yellowEye2} animate={{ opacity: hov ? 1 : 0 }} transition={{ duration: 0.2 }} className="absolute inset-0 w-full h-full object-cover" />
           </motion.div>
         </div>
       </div>
